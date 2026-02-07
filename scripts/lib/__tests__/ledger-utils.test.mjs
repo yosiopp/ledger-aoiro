@@ -208,4 +208,38 @@ account Expenses:Rent
       console.log = originalLog;
     });
   });
+
+  describe('getNextMonthFirstDay', () => {
+    it('通常の月の次の月の1日を取得できる', () => {
+      expect(ledgerUtils.getNextMonthFirstDay('2026-01')).toBe('2026-02-01');
+      expect(ledgerUtils.getNextMonthFirstDay('2026-06')).toBe('2026-07-01');
+      expect(ledgerUtils.getNextMonthFirstDay('2026-11')).toBe('2026-12-01');
+    });
+
+    it('12月の次の月は翌年の1月1日になる', () => {
+      expect(ledgerUtils.getNextMonthFirstDay('2026-12')).toBe('2027-01-01');
+      expect(ledgerUtils.getNextMonthFirstDay('2025-12')).toBe('2026-01-01');
+    });
+
+    it('2月の次の月は3月1日になる', () => {
+      expect(ledgerUtils.getNextMonthFirstDay('2026-02')).toBe('2026-03-01');
+      expect(ledgerUtils.getNextMonthFirstDay('2024-02')).toBe('2024-03-01'); // うるう年
+    });
+
+    it('1桁の月でも正しく処理される', () => {
+      expect(ledgerUtils.getNextMonthFirstDay('2026-09')).toBe('2026-10-01');
+    });
+  });
+
+  describe('getNextYearFirstDay', () => {
+    it('次の年の1月1日を取得できる', () => {
+      expect(ledgerUtils.getNextYearFirstDay('2026')).toBe('2027-01-01');
+      expect(ledgerUtils.getNextYearFirstDay('2025')).toBe('2026-01-01');
+      expect(ledgerUtils.getNextYearFirstDay('2099')).toBe('2100-01-01');
+    });
+
+    it('文字列の年を正しくパースできる', () => {
+      expect(ledgerUtils.getNextYearFirstDay('2020')).toBe('2021-01-01');
+    });
+  });
 });

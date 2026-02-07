@@ -2,7 +2,7 @@
 // 指定月の収支を集計して表示
 
 import { execSync } from 'child_process';
-import { getTargetMonth, getMonthLedgerFiles, printFileList } from './lib/ledger-utils.mjs';
+import { getTargetMonth, getMonthLedgerFiles, printFileList, getNextMonthFirstDay } from './lib/ledger-utils.mjs';
 
 /**
  * 月次集計を実行
@@ -20,12 +20,13 @@ function monthlySummary(month) {
   printFileList(files);
 
   const fileArgs = files.map(f => `-f ${f}`).join(' ');
+  const endDate = getNextMonthFirstDay(month);
 
   try {
     // 収益
     console.log('💰 収益 (Income)');
     console.log('─'.repeat(60));
-    const incomeCmd = `ledger ${fileArgs} balance Income --begin ${month}-01 --end ${month}-32 --depth 2`;
+    const incomeCmd = `ledger ${fileArgs} balance Income --begin ${month}-01 --end ${endDate} --depth 2`;
     try {
       const income = execSync(incomeCmd, { encoding: 'utf-8' });
       console.log(income || '   (なし)');
@@ -36,7 +37,7 @@ function monthlySummary(month) {
     // 費用
     console.log('\n💸 費用 (Expenses)');
     console.log('─'.repeat(60));
-    const expensesCmd = `ledger ${fileArgs} balance Expenses --begin ${month}-01 --end ${month}-32 --depth 2`;
+    const expensesCmd = `ledger ${fileArgs} balance Expenses --begin ${month}-01 --end ${endDate} --depth 2`;
     try {
       const expenses = execSync(expensesCmd, { encoding: 'utf-8' });
       console.log(expenses || '   (なし)');
@@ -69,7 +70,7 @@ function monthlySummary(month) {
     // 月次の損益
     console.log('\n📈 月次損益');
     console.log('─'.repeat(60));
-    const plCmd = `ledger ${fileArgs} balance Income Expenses --begin ${month}-01 --end ${month}-32`;
+    const plCmd = `ledger ${fileArgs} balance Income Expenses --begin ${month}-01 --end ${endDate}`;
     try {
       const pl = execSync(plCmd, { encoding: 'utf-8' });
       console.log(pl);

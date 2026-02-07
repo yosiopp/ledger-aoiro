@@ -335,3 +335,26 @@ export function printFileList(files) {
   files.forEach(f => console.log(`   - ${f}`));
   console.log();
 }
+
+/**
+ * 指定月の次の月の1日を取得（ledger の --end オプション用）
+ * @param {string} month - 月（YYYY-MM 形式）
+ * @returns {string} 次の月の1日（YYYY-MM-DD 形式）
+ */
+export function getNextMonthFirstDay(month) {
+  const [year, mon] = month.split('-').map(Number);
+  const date = new Date(year, mon, 1); // mon is 0-indexed, so this gives us the next month
+  const nextYear = date.getFullYear();
+  const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
+  return `${nextYear}-${nextMonth}-01`;
+}
+
+/**
+ * 指定年の次の年の1月1日を取得（ledger の --end オプション用）
+ * @param {string} year - 年（YYYY 形式）
+ * @returns {string} 次の年の1月1日（YYYY-MM-DD 形式）
+ */
+export function getNextYearFirstDay(year) {
+  const nextYear = parseInt(year, 10) + 1;
+  return `${nextYear}-01-01`;
+}

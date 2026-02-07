@@ -2,7 +2,7 @@
 // 青色申告決算書に対応した年次の損益計算書・貸借対照表を生成
 
 import { execSync } from 'child_process';
-import { getTargetYear, getYearLedgerFiles, printFileList } from './lib/ledger-utils.mjs';
+import { getTargetYear, getYearLedgerFiles, printFileList, getNextYearFirstDay } from './lib/ledger-utils.mjs';
 
 /**
  * 年次集計を実行
@@ -24,7 +24,7 @@ function yearlySummary(year) {
 
   const fileArgs = files.map(f => `-f ${f}`).join(' ');
   const beginDate = `${year}-01-01`;
-  const endDate = `${year}-12-32`;
+  const endDate = getNextYearFirstDay(year);
 
   try {
     // ========================================

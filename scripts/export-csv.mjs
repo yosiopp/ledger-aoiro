@@ -3,7 +3,7 @@
 
 import { execSync } from 'child_process';
 import { writeFileSync } from 'fs';
-import { getLedgerFiles, printFileList } from './lib/ledger-utils.mjs';
+import { getLedgerFiles, printFileList, getNextMonthFirstDay, getNextYearFirstDay } from './lib/ledger-utils.mjs';
 
 /**
  * コマンドライン引数を解析
@@ -108,10 +108,10 @@ function exportCsv(options) {
 
     if (month) {
       beginArg = `--begin ${month}-01`;
-      endArg = `--end ${month}-32`;
+      endArg = `--end ${getNextMonthFirstDay(month)}`;
     } else if (year) {
       beginArg = `--begin ${year}-01-01`;
-      endArg = `--end ${year}-12-32`;
+      endArg = `--end ${getNextYearFirstDay(year)}`;
     }
 
     const command = `ledger ${fileArgs} register ${beginArg} ${endArg}`.trim();

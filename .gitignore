@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+
+# Test coverage
+coverage/
+
+# Test temporary files
+ledger-test-temp/
+
+# Ledger transaction files (user specific)
+# テンプレート利用者は自分の取引ファイルをここに追加
+ledger/20*.ledger
+
+# Export files
+*.csv
+transactions.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*

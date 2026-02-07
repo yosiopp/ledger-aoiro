@@ -1,0 +1,29 @@
+{
+  "name": "ledger-aoiro",
+  "version": "1.0.0",
+  "description": "[ledger](https://github.com/ledger/ledger) を使って青色申告するためのテンプレート",
+  "homepage": "https://github.com/yosiopp/ledger-aoiro#readme",
+  "bugs": {
+    "url": "https://github.com/yosiopp/ledger-aoiro/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yosiopp/ledger-aoiro.git"
+  },
+  "license": "ISC",
+  "author": "yosiopp",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "check": "node scripts/check-balance.mjs",
+    "monthly": "node scripts/monthly-summary.mjs",
+    "yearly": "node scripts/yearly-summary.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.8",
+    "vitest": "^2.1.8"
+  }
+}

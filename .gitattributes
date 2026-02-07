@@ -1,0 +1,12 @@
+# Git属性ファイル
+
+# テスト関連ファイル（開発用）
+# テンプレート利用者は削除可能
+scripts/lib/__tests__/** linguist-documentation
+vitest.config.mjs linguist-documentation
+
+# 改行コードの統一
+* text=auto
+*.mjs text eol=lf
+*.ledger text eol=lf
+*.md text eol=lf

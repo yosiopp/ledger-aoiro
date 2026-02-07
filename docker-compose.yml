@@ -1,0 +1,6 @@
+services:
+  ledger:
+    build: .
+    volumes:
+      - ./ledger:/app/ledger
+    working_dir: /app

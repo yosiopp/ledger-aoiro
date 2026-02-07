@@ -1,0 +1,6 @@
+{
+  "hledger.autoCompletion.enabled": true,
+  "hledger.autoCompletion.maxResults": 25,
+  "hledger.inlineCompletion.enabled": true,
+  "editor.formatOnSave": false
+}

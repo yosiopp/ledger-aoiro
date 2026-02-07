@@ -7,9 +7,10 @@ coverage/
 # Test temporary files
 ledger-test-temp/
 
-# Ledger transaction files (user specific)
-# テンプレート利用者は自分の取引ファイルをここに追加
-ledger/20*.ledger
+# Memo files (user specific)
+# ユーザーのmemoファイルを除外（README.mdは保持）
+memo/*/
+!memo/README.md
 
 # Export files
 *.csv

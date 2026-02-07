@@ -8,9 +8,9 @@
 ledger-aoiro/
 ├── ledger/              # 帳簿ファイル（会計データ）
 │   ├── accounts.ledger          # 勘定科目定義
-│   ├── opening_balance.ledger   # 期首残高
-│   ├── closing.ledger           # 期末整理仕訳
 │   └── 2026/                    # 年別ディレクトリ
+│       ├── opening.ledger           # 2026年度 期首残高
+│       ├── closing.ledger           # 2026年度 期末整理仕訳
 │       ├── 01.ledger                # 1月の取引
 │       ├── 02.ledger                # 2月の取引
 │       └── ...                      # 3月以降の取引
@@ -72,11 +72,12 @@ account Expenses:Supplies
 
 **重要：** 検証スクリプトがこのファイルを参照し、未定義の勘定科目が使われているとエラーを出します。
 
-#### opening_balance.ledger
+#### YYYY/opening.ledger
 
-期首（年度始めや事業開始時）の残高を記録するファイル。
+各年度の期首（年度始めや事業開始時）の残高を記録するファイル。年別ディレクトリ内に配置します。
 
 ```ledger
+; ledger/2026/opening.ledger
 2026/01/01 * 期首残高
     Assets:Cash                     50000 JPY
     Assets:Bank:Business           500000 JPY
@@ -85,11 +86,12 @@ account Expenses:Supplies
 
 年度が変わったら、前年度の closing.ledger で確定した残高をここに記載します。
 
-#### closing.ledger
+#### YYYY/closing.ledger
 
-期末（年度末）の整理仕訳を記録するファイル。
+各年度の期末（年度末）の整理仕訳を記録するファイル。年別ディレクトリ内に配置します。
 
 ```ledger
+; ledger/2026/closing.ledger
 2026/12/31 * 決算整理：損益の確定
     Income:Sales               -1200000 JPY  ; 売上の相殺
     Expenses:Supplies            150000 JPY  ; 経費の相殺
@@ -166,6 +168,7 @@ ledger CLI をラップして各種処理を実行するスクリプト群です
 
 - **check-balance.mjs** - 貸借が一致しているかチェック
 - **validate-accounts.mjs** - 未定義の勘定科目が使われていないか検証
+- **init-year.mjs** - 年次ディレクトリと12ヶ月分の月次ファイルを一括作成
 - **monthly-summary.mjs** - 指定月の収支を集計
 - **yearly-summary.mjs** - 年間の収支を集計
 - **export-csv.mjs** - 会計データを CSV 形式でエクスポート
@@ -174,10 +177,12 @@ ledger CLI をラップして各種処理を実行するスクリプト群です
 
 新しいファイルを作成する際の雛形です。
 
-- **monthly.ledger.template** - 月次ファイルのテンプレート
-- **memo.md.template** - メモファイルのテンプレート
+- **monthly.ledger.tpl** - 月次ファイルのテンプレート
+- **opening.ledger.tpl** - 期首残高ファイルのテンプレート
+- **closing.ledger.tpl** - 期末整理仕訳ファイルのテンプレート
+- **receipt.memo.tpl** - メモファイルのテンプレート
 
-コピーして使用することで、記帳のフォーマットを統一できます。
+`init-year` コマンドでこれらのテンプレートが自動適用されます。
 
 ### docs/ - ドキュメント
 
@@ -263,8 +268,8 @@ Claude Code（AI 開発支援ツール）用のプロジェクトガイド。プ
 ### 定期的に編集するファイル
 
 - `ledger/accounts.ledger` - 新しい勘定科目が必要になったとき
-- `ledger/opening_balance.ledger` - 年度始めに1回
-- `ledger/closing.ledger` - 年度末に1回
+- `ledger/YYYY/opening.ledger` - 年度始めに1回
+- `ledger/YYYY/closing.ledger` - 年度末に1回
 
 ### ほとんど編集しないファイル
 

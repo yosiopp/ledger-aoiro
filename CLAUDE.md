@@ -71,6 +71,7 @@ Node.js スクリプト（ES modules）がledger CLIコマンドをラップし�
 
 - **scripts/validate-accounts.mjs** - 使用されている勘定科目がすべてaccounts.ledgerで定義されているか検証（未定義の勘定科目があればエラー）
 - **scripts/check-balance.mjs** - 貸借一致チェック
+- **scripts/init-year.mjs** - 年次ディレクトリと12ヶ月分の月次ファイルを一括作成
 - **scripts/monthly-summary.mjs** - 月次集計の生成
 - **scripts/yearly-summary.mjs** - 年次集計の生成
 - **scripts/export-csv.mjs** - CSV形式でのエクスポート

@@ -2,6 +2,12 @@
 
 このドキュメントは、ledger-aoiro テンプレート自体の開発・改善を行う開発者向けのガイドです。
 
+## 対象読者
+
+このドキュメントは、**ledger-aoiro テンプレート自体**の開発・改善を行う開発者向けのガイドです。
+
+**テンプレート利用者（帳簿管理のみを行う方）は、このドキュメントの内容を実施する必要はありません。**
+
 ## 開発環境のセットアップ
 
 ```bash
@@ -116,10 +122,27 @@ describe('yourFunction', () => {
 - `.gitattributes` で開発用ファイルをマーク
 - ドキュメントで説明
 
-削除可能なファイル：
-- `scripts/lib/__tests__/`
-- `vitest.config.mjs`
-- `package.json` の `devDependencies`
+### テンプレート利用時の削除対象
+
+帳簿管理のみを行う場合、以下のファイルは削除しても問題ありません：
+
+**削除可能なファイル・ディレクトリ：**
+- `scripts/lib/__tests__/` - テストファイル
+- `vitest.config.mjs` - テスト設定
+- `package.json` の `devDependencies` セクション
+- `package.json` の `test` 関連スクリプト
+
+**削除の手順：**
+
+```bash
+# テストコードを削除
+rm -rf scripts/lib/__tests__/
+rm vitest.config.mjs
+
+# package.json を編集して devDependencies と test スクリプトを削除
+```
+
+**注意：** 削除後も、スクリプト本体（`scripts/*.mjs`）は動作します。テストコードはテンプレート開発者向けの機能です。
 
 ### テンプレート機能との互換性
 

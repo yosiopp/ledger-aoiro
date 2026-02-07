@@ -76,15 +76,33 @@ docker compose build
 docker compose run --rm ledger ledger --version
 ```
 
-### 3. 取引を記帳する
+### 3. 年次ディレクトリの作成
+
+**Mac / Linux / WSL / Git Bash：**
 
 ```bash
-# 年別ディレクトリを作成
-mkdir -p ledger/2026
+# 現在の年度のディレクトリを作成
+make init-year
 
-# 月次ファイルを作成して取引を記録
-# ledger/2026/01.ledger
+# 特定の年度を指定
+make init-year YEAR=2027
 ```
+
+**Windows (PowerShell)：**
+
+```powershell
+# 現在の年度のディレクトリを作成
+.\ledger.ps1 init-year
+
+# 特定の年度を指定
+.\ledger.ps1 init-year 2027
+```
+
+これで `ledger/YYYY/` ディレクトリと `01.ledger` から `12.ledger` までの12個の月次ファイルが自動作成されます。
+
+### 4. 取引を記帳する
+
+各月のファイル（例：`ledger/2026/01.ledger`）に取引を記録します。
 
 **例：**
 
@@ -94,7 +112,7 @@ mkdir -p ledger/2026
     Assets:Bank:Business
 ```
 
-### 4. 集計を実行
+### 5. 集計を実行
 
 **Mac / Linux / WSL / Git Bash：**
 

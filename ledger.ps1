@@ -15,6 +15,7 @@ function Show-Help {
     Write-Host "基本コマンド:"
     Write-Host "  .\ledger.ps1 check          - 貸借一致チェックを実行"
     Write-Host "  .\ledger.ps1 validate       - 勘定科目の定義チェック"
+    Write-Host "  .\ledger.ps1 init-year [year] - 年次ディレクトリと12ヶ月分のファイルを作成"
     Write-Host "  .\ledger.ps1 monthly 2026-01 - 月次集計を実行"
     Write-Host "  .\ledger.ps1 yearly         - 年次集計を実行"
     Write-Host "  .\ledger.ps1 export         - CSV形式でエクスポート"
@@ -25,6 +26,7 @@ function Show-Help {
     Write-Host "  .\ledger.ps1 build          - Dockerイメージをビルド"
     Write-Host ""
     Write-Host "使用例:"
+    Write-Host "  .\ledger.ps1 init-year 2027"
     Write-Host "  .\ledger.ps1 monthly 2026-01"
     Write-Host "  .\ledger.ps1 ledger -f ledger/accounts.ledger balance"
 }
@@ -45,6 +47,14 @@ switch ($Command.ToLower()) {
     }
     "validate" {
         Invoke-DockerCompose "node scripts/validate-accounts.mjs"
+    }
+    "init-year" {
+        if ($Args.Count -eq 0) {
+            Invoke-DockerCompose "node scripts/init-year.mjs"
+        } else {
+            $year = $Args[0]
+            Invoke-DockerCompose "node scripts/init-year.mjs --year=$year"
+        }
     }
     "monthly" {
         if ($Args.Count -eq 0) {

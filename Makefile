@@ -1,7 +1,7 @@
 # Makefile for ledger-aoiro
 # Mac/Linux/WSL/Git Bash で使用可能
 
-.PHONY: help check validate monthly yearly export ledger shell build
+.PHONY: help check validate monthly yearly export init-year ledger shell build
 
 # デフォルトターゲット: ヘルプを表示
 help:
@@ -10,6 +10,7 @@ help:
 	@echo "基本コマンド:"
 	@echo "  make check          - 貸借一致チェックを実行"
 	@echo "  make validate       - 勘定科目の定義チェック"
+	@echo "  make init-year      - 年次ディレクトリと12ヶ月分のファイルを作成（YEAR=2027 で年を指定）"
 	@echo "  make monthly        - 月次集計（MONTH=2026-01 で月を指定）"
 	@echo "  make yearly         - 年次集計を実行"
 	@echo "  make export         - CSV形式でエクスポート"
@@ -20,6 +21,7 @@ help:
 	@echo "  make build          - Dockerイメージをビルド"
 	@echo ""
 	@echo "使用例:"
+	@echo "  make init-year YEAR=2027"
 	@echo "  make monthly MONTH=2026-01"
 	@echo "  make ledger ARGS='-f ledger/accounts.ledger balance'"
 
@@ -30,6 +32,14 @@ check:
 # 勘定科目検証
 validate:
 	docker compose run --rm ledger node scripts/validate-accounts.mjs
+
+# 年次ディレクトリ初期化（YEAR変数で年を指定、デフォルトは現在の年）
+init-year:
+ifdef YEAR
+	docker compose run --rm ledger node scripts/init-year.mjs --year=$(YEAR)
+else
+	docker compose run --rm ledger node scripts/init-year.mjs
+endif
 
 # 月次集計（MONTH変数で月を指定）
 monthly:

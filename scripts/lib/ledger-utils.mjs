@@ -66,13 +66,8 @@ export function getYearLedgerFiles(year) {
     files.push(ACCOUNTS_FILE);
   }
 
-  // opening_balance.ledger も含める
-  const openingFile = join(LEDGER_DIR, 'opening_balance.ledger');
-  if (existsSync(openingFile)) {
-    files.push(openingFile);
-  }
-
-  // 指定年度ディレクトリの全月次ファイル（ledger/YYYY/*.ledger）
+  // 指定年度ディレクトリの全ファイル（ledger/YYYY/*.ledger）
+  // ※ opening.ledger, closing.ledger, 月次ファイルをすべて含む
   const yearDir = join(LEDGER_DIR, year);
   if (existsSync(yearDir)) {
     const yearFiles = readdirSync(yearDir)
@@ -98,14 +93,16 @@ export function getMonthLedgerFiles(month) {
     files.push(ACCOUNTS_FILE);
   }
 
-  // opening_balance.ledger も含める
-  const openingFile = join(LEDGER_DIR, 'opening_balance.ledger');
+  // 年と月を分解
+  const [year, mon] = month.split('-');
+
+  // 指定年度の opening.ledger（期首残高）
+  const openingFile = join(LEDGER_DIR, year, 'opening.ledger');
   if (existsSync(openingFile)) {
     files.push(openingFile);
   }
 
   // 指定月のファイル（ledger/YYYY/MM.ledger）
-  const [year, mon] = month.split('-');
   const monthFile = join(LEDGER_DIR, year, `${mon}.ledger`);
   if (existsSync(monthFile)) {
     files.push(monthFile);
@@ -162,15 +159,17 @@ export function getLedgerFiles(options = {}) {
     files.push(ACCOUNTS_FILE);
   }
 
-  // opening_balance.ledger も含める
-  const openingFile = join(LEDGER_DIR, 'opening_balance.ledger');
-  if (existsSync(openingFile)) {
-    files.push(openingFile);
-  }
-
   if (month) {
-    // 特定月のみ（ledger/YYYY/MM.ledger）
+    // 年と月を分解
     const [y, m] = month.split('-');
+
+    // 該当年度の opening.ledger を含める
+    const openingFile = join(LEDGER_DIR, y, 'opening.ledger');
+    if (existsSync(openingFile)) {
+      files.push(openingFile);
+    }
+
+    // 特定月のみ（ledger/YYYY/MM.ledger）
     const monthFile = join(LEDGER_DIR, y, `${m}.ledger`);
     if (existsSync(monthFile)) {
       files.push(monthFile);

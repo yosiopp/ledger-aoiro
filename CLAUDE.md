@@ -44,9 +44,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 モジュール化されたledgerファイル構成を採用しています：
 
 - **[ledger/accounts.ledger](ledger/accounts.ledger)** - 勘定科目の正規定義ファイル。すべての有効な勘定科目の権威ソース。新しい勘定科目を使う前に必ずここに定義する必要があります。
-- **ledger/opening_balance.ledger** - 期首残高
-- **ledger/closing.ledger** - 期末整理仕訳
-- **ledger/YYYY/*.ledger** - 年別ディレクトリの下に月次の取引ファイルを配置（例：ledger/2026/01.ledger）
+- **ledger/YYYY/opening.ledger** - 年度ごとの期首残高（例：ledger/2026/opening.ledger）
+- **ledger/YYYY/closing.ledger** - 年度ごとの期末整理仕訳（例：ledger/2026/closing.ledger）
+- **ledger/YYYY/MM.ledger** - 年別ディレクトリの下に月次の取引ファイルを配置（例：ledger/2026/01.ledger）
 
 **ファイル配置の規則：**
 - 年ごとにディレクトリを作成（例：`ledger/2026/`）
@@ -145,7 +145,7 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
    残高 → Equity:OpeningBalances
    ```
 
-旧年度の仕訳は closing.ledger に、新年度の仕訳は opening_balance.ledger に記載します。
+旧年度の仕訳は `ledger/YYYY/closing.ledger` に、新年度の仕訳は `ledger/YYYY/opening.ledger` に記載します（例：2026年度なら `ledger/2026/closing.ledger` と `ledger/2027/opening.ledger`）。
 
 ## ファイル構成
 

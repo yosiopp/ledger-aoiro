@@ -20,6 +20,12 @@ make check
 # 勘定科目の検証
 make validate
 
+# 年次ディレクトリの初期化（現在の年）
+make init-year
+
+# 年次ディレクトリの初期化（年を指定）
+make init-year YEAR=2027
+
 # 月次集計（月を指定）
 make monthly MONTH=2026-01
 
@@ -49,6 +55,12 @@ make shell
 
 # 勘定科目の検証
 .\ledger.ps1 validate
+
+# 年次ディレクトリの初期化（現在の年）
+.\ledger.ps1 init-year
+
+# 年次ディレクトリの初期化（年を指定）
+.\ledger.ps1 init-year 2027
 
 # 月次集計（月を指定）
 .\ledger.ps1 monthly 2026-01
@@ -87,16 +99,38 @@ account Expenses:Books
     note 業務関連の書籍購入費
 ```
 
-### 2. 月次取引の記帳
+### 2. 年次ディレクトリの作成
 
-年別ディレクトリ `ledger/2026/` を作成し、その下に月次ファイル `01.ledger` を作成して取引を記録します。
+年度が変わったら、まず年次ディレクトリと12ヶ月分のファイルを一括作成します。
+
+**Mac / Linux / WSL / Git Bash：**
 
 ```bash
-# ディレクトリ作成
-mkdir -p ledger/2026
+# 現在の年度のディレクトリを作成
+make init-year
 
-# 月次ファイル作成（ledger/2026/01.ledger）
+# 特定の年度を指定
+make init-year YEAR=2027
 ```
+
+**Windows (PowerShell)：**
+
+```powershell
+# 現在の年度のディレクトリを作成
+.\ledger.ps1 init-year
+
+# 特定の年度を指定
+.\ledger.ps1 init-year 2027
+```
+
+このコマンドで以下が自動的に作成されます：
+- `ledger/YYYY/` ディレクトリ
+- `01.ledger` から `12.ledger` までの12個のファイル（テンプレート適用済み）
+- 既存のファイルは上書きされません（安全）
+
+### 3. 月次取引の記帳
+
+作成された月次ファイル（例：`ledger/2026/01.ledger`）に取引を記録します。
 
 **取引の記帳例：**
 
@@ -116,7 +150,7 @@ mkdir -p ledger/2026
 
 詳しい記帳方法は [workflow.md](workflow.md) を参照してください。
 
-### 3. 集計の実行
+### 4. 集計の実行
 
 #### ショートカットコマンドを使用（推奨）
 
@@ -138,7 +172,7 @@ make validate               # 勘定科目の検証
 .\ledger.ps1 validate         # 勘定科目の検証
 ```
 
-### 4. 残高の確認
+### 5. 残高の確認
 
 特定の勘定科目の残高を確認する：
 
@@ -150,7 +184,7 @@ make ledger ARGS="balance Assets:Cash"
 .\ledger.ps1 ledger balance Assets:Cash
 ```
 
-### 5. 出納帳の表示
+### 6. 出納帳の表示
 
 特定の勘定科目の取引履歴を表示：
 

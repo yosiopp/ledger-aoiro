@@ -16,6 +16,7 @@
   "main": "index.js",
   "scripts": {
     "check": "node scripts/check-balance.mjs",
+    "init-year": "node scripts/init-year.mjs",
     "monthly": "node scripts/monthly-summary.mjs",
     "yearly": "node scripts/yearly-summary.mjs",
     "test": "vitest run",

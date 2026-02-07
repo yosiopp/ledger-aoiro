@@ -1,6 +1,6 @@
 # ledger-aoiro
 
-[ledger CLI](https://github.com/ledger/ledger) を使って青色申告するためのテンプレート。
+[hledger](https://hledger.org/) を使って青色申告するためのテンプレート。
 
 ## このリポジトリについて
 
@@ -16,7 +16,9 @@
 ## 特徴
 
 - 複式簿記による記帳（青色申告65万円控除対応）
-- Docker環境で ledger CLI を簡単に使える
+- Docker環境で hledger を簡単に使える
+- **対話的な仕訳入力**：`hledger add` コマンドでガイド付き入力
+- **ブラウザUI**：`hledger-web` でブラウザから帳簿を閲覧・編集
 - 勘定科目の定義を一元管理し、未定義の使用を検証
 - 月次・年次の集計を自動生成
 - **テンプレートとして利用**：このリポジトリをベースに自分専用の帳簿リポジトリを作成
@@ -73,7 +75,7 @@ git commit -m "Initial commit from ledger-aoiro template"
 docker compose build
 
 # 動作確認
-docker compose run --rm ledger ledger --version
+docker compose run --rm ledger hledger --version
 ```
 
 ### 3. 年次ディレクトリの作成
@@ -100,25 +102,41 @@ make init-year YEAR=2027
 
 これで `ledger/YYYY/` ディレクトリと `01.ledger` から `12.ledger` までの12個の月次ファイルが自動作成されます。
 
-### 4. 取引を記帳する
+### 5. 仕訳を入力する
 
-各月のファイル（例：`ledger/2026/01.ledger`）に取引を記録します。
+**対話的に入力（推奨）：**
 
-**例：**
+```bash
+# Mac / Linux / WSL / Git Bash
+make add MONTH=2026-01
+
+# Windows (PowerShell)
+.\ledger.ps1 add 2026-01
+```
+
+ガイド付きプロンプトで以下を入力：
+- 日付（例：2026/01/15）
+- 説明（例：事務用品購入）
+- 勘定科目（補完機能付き）
+- 金額（自動計算）
+
+**または、ファイルを直接編集：**
 
 ```ledger
+# ledger/2026/01.ledger
 2026/01/15 * 事務用品購入
     Expenses:Supplies           3000 JPY
     Assets:Bank:Business
 ```
 
-### 5. 集計を実行
+### 6. 集計を実行
 
 **Mac / Linux / WSL / Git Bash：**
 
 ```bash
 make check                  # 貸借チェック
 make monthly MONTH=2026-01  # 月次集計
+make web                    # ブラウザで閲覧
 ```
 
 **Windows (PowerShell)：**
@@ -126,6 +144,7 @@ make monthly MONTH=2026-01  # 月次集計
 ```powershell
 .\ledger.ps1 check         # 貸借チェック
 .\ledger.ps1 monthly 2026-01  # 月次集計
+.\ledger.ps1 web           # ブラウザで閲覧
 ```
 
 ## ドキュメント
@@ -154,7 +173,7 @@ make monthly MONTH=2026-01  # 月次集計
 
 問題が発生した場合：
 
-1. [ledger CLI 公式ドキュメント](https://ledger-cli.org/doc/ledger3.html)
+1. [hledger 公式ドキュメント](https://hledger.org/)
 2. テンプレートの [Issues](https://github.com/yosiopp/ledger-aoiro/issues)
 
 ## ライセンス

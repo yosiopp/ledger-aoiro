@@ -1,7 +1,7 @@
 # Makefile for ledger-aoiro
 # Mac/Linux/WSL/Git Bash で使用可能
 
-.PHONY: help check validate monthly yearly export init-year ledger shell build
+.PHONY: help check validate monthly yearly export init-year add web ledger shell build
 
 # デフォルトターゲット: ヘルプを表示
 help:
@@ -15,14 +15,19 @@ help:
 	@echo "  make yearly         - 年次集計を実行"
 	@echo "  make export         - CSV形式でエクスポート"
 	@echo ""
+	@echo "仕訳入力コマンド:"
+	@echo "  make add            - 対話的に仕訳を追加（MONTH=2026-01 で月を指定）"
+	@echo "  make web            - ブラウザで帳簿を閲覧（http://localhost:5000）"
+	@echo ""
 	@echo "開発用コマンド:"
-	@echo "  make ledger         - ledger CLIを直接実行（ARGS で引数を渡す）"
+	@echo "  make ledger         - hledger を直接実行（ARGS で引数を渡す）"
 	@echo "  make shell          - Dockerコンテナ内のシェルに入る"
 	@echo "  make build          - Dockerイメージをビルド"
 	@echo ""
 	@echo "使用例:"
 	@echo "  make init-year YEAR=2027"
 	@echo "  make monthly MONTH=2026-01"
+	@echo "  make add MONTH=2026-01"
 	@echo "  make ledger ARGS='-f ledger/accounts.ledger balance'"
 
 # 貸借チェック
@@ -59,12 +64,33 @@ yearly:
 export:
 	docker compose run --rm ledger node scripts/export-csv.mjs
 
-# ledger CLI を直接実行（ARGS で引数を渡す）
+# 対話的に仕訳を追加（MONTH変数で月を指定）
+add:
+ifdef MONTH
+	@echo "📝 仕訳を追加: $(MONTH)"
+	@echo "💡 Ctrl+D または Ctrl+C で終了します"
+	@echo ""
+	docker compose run --rm ledger hledger add -f ledger/accounts.ledger -f ledger/$(shell echo $(MONTH) | cut -d'-' -f1)/$(shell echo $(MONTH) | cut -d'-' -f2).ledger
+else
+	@echo "エラー: MONTH を指定してください"
+	@echo "使用例: make add MONTH=2026-01"
+	@exit 1
+endif
+
+# ブラウザで帳簿を閲覧（hledger-web）
+web:
+	@echo "🌐 hledger-web を起動中..."
+	@echo "📖 ブラウザで http://localhost:5000 を開いてください"
+	@echo "💡 Ctrl+C で終了します"
+	@echo ""
+	docker compose run --rm --service-ports ledger hledger-web -f ledger/accounts.ledger --serve --host=0.0.0.0 --port=5000
+
+# hledger を直接実行（ARGS で引数を渡す）
 ledger:
 ifdef ARGS
-	docker compose run --rm ledger ledger $(ARGS)
+	docker compose run --rm ledger hledger $(ARGS)
 else
-	docker compose run --rm ledger ledger --version
+	docker compose run --rm ledger hledger --version
 endif
 
 # コンテナ内のシェルに入る

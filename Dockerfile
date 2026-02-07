@@ -1,10 +1,17 @@
 FROM node:20-bookworm-slim
 
-# ledger インストール
+# hledger と hledger-web のインストール、ロケール設定
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ledger ca-certificates \
+  && apt-get install -y --no-install-recommends hledger hledger-web ca-certificates locales \
+  && echo "ja_JP.UTF-8 UTF-8" > /etc/locale.gen \
+  && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+  && locale-gen \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+# UTF-8 ロケールを設定
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 # 作業ディレクトリ
 WORKDIR /app

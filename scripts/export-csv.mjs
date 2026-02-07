@@ -42,7 +42,7 @@ function parseArgs() {
 }
 
 /**
- * ledger の register コマンドを CSV 形式に変換
+ * hledger の register コマンドを CSV 形式に変換
  */
 function convertToCsv(registerOutput) {
   const lines = registerOutput.trim().split('\n');
@@ -54,7 +54,7 @@ function convertToCsv(registerOutput) {
   for (const line of lines) {
     if (!line.trim()) continue;
 
-    // ledger register の出力形式をパース
+    // hledger register の出力形式をパース
     // 例: 2024/01/15 開業資金        Assets:Bank:Business      100,000 JPY  100,000 JPY
     const match = line.match(/^(\S+)\s+(.+?)\s{2,}(\S+(?::\S+)*)\s+(-?[\d,]+\s+\S+)\s+(-?[\d,]+\s+\S+)$/);
 
@@ -102,7 +102,7 @@ function exportCsv(options) {
   const fileArgs = files.map(f => `-f ${f}`).join(' ');
 
   try {
-    // ledger register コマンドで全取引を取得
+    // hledger register コマンドで全取引を取得
     let beginArg = '';
     let endArg = '';
 
@@ -114,7 +114,7 @@ function exportCsv(options) {
       endArg = `--end ${getNextYearFirstDay(year)}`;
     }
 
-    const command = `ledger ${fileArgs} register ${beginArg} ${endArg}`.trim();
+    const command = `hledger ${fileArgs} register ${beginArg} ${endArg}`.trim();
 
     console.log(`🔍 実行コマンド: ${command}\n`);
 
@@ -129,7 +129,7 @@ function exportCsv(options) {
       // register 形式のまま出力
       writeFileSync(output, output_data);
       console.log(`✅ エクスポート完了: ${output}`);
-      console.log(`   形式: ledger register 形式`);
+      console.log(`   形式: hledger register 形式`);
     } else {
       // CSV 形式に変換
       const csv = convertToCsv(output_data);
@@ -151,7 +151,7 @@ function exportCsv(options) {
 }
 
 // 実行
-console.log('📊 Ledger CSV エクスポートツール\n');
+console.log('📊 hledger CSV エクスポートツール\n');
 
 const options = parseArgs();
 

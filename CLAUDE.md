@@ -4,23 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-[ledger CLI](https://github.com/ledger/ledger) を使った青色申告（個人事業主向け）の**テンプレートプロジェクト**です。複式簿記による記帳で65万円控除を目指します。
+[hledger](https://hledger.org/) を使った青色申告（個人事業主向け）の**テンプレートプロジェクト**です。複式簿記による記帳で65万円控除を目指します。
 
 **重要：** このプロジェクトはテンプレートです。利用者はGitHub の "Use this template" 機能や ZIP ダウンロードでテンプレートを取得し、自分専用のプライベートリポジトリで帳簿を管理します。
 
 ## アーキテクチャ
 
-### 設計思想：Ledgerとmemoの責務分担
+### 設計思想：hledgerとmemoの責務分担
 
 このプロジェクトは、会計記録と判断根拠を明確に分離する設計を採用しています：
 
-- **ledger = 「会計の事実」** - 客観的な取引の記録（What happened）
+- **hledger = 「会計の事実」** - 客観的な取引の記録（What happened）
 - **memo = 「判断の理由」** - なぜそのように記帳したかの根拠（Why we recorded it this way）
 - **税務 = 結果＋理由のセット** - 税務調査では両方が重要
 
 **なぜこの分離が重要か：**
 
-1. **監査証跡の完全性** - ledgerファイルは機械可読な形式で客観的事実を記録し、memoファイルは人間可読な形式で判断の背景を記録
+1. **監査証跡の完全性** - hledgerファイルは機械可読な形式で客観的事実を記録し、memoファイルは人間可読な形式で判断の背景を記録
 2. **説明責任** - 将来の自分や税理士、税務署に対して「なぜこの勘定科目を選んだのか」「なぜこの金額で按分したのか」を説明できる
 3. **再現可能性** - 年度をまたいでも同じ判断基準を適用できるよう、判断ロジックを文書化
 
@@ -39,9 +39,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 参考：国税庁タックスアンサーNo.1805「家事関連費」
 ```
 
-### Ledgerファイル構成
+### hledgerファイル構成
 
-モジュール化されたledgerファイル構成を採用しています：
+モジュール化されたhledgerファイル構成を採用しています：
 
 - **[ledger/accounts.ledger](ledger/accounts.ledger)** - 勘定科目の正規定義ファイル。すべての有効な勘定科目の権威ソース。新しい勘定科目を使う前に必ずここに定義する必要があります。
 - **ledger/YYYY/opening.ledger** - 年度ごとの期首残高（例：ledger/2026/opening.ledger）
@@ -63,11 +63,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Income**（収益） - 売上、雑収入
 - **Expenses**（費用） - 事業経費（広告宣伝費、消耗品費、通信費、水道光熱費、地代家賃、旅費交通費、会議費、外注費、租税公課、減価償却費）
 
-青色申告決算書とledger勘定科目の対応表は [docs/accounts.md](docs/accounts.md) を参照してください。
+青色申告決算書とhledger勘定科目の対応表は [docs/accounts.md](docs/accounts.md) を参照してください。
 
 ### スクリプト構成
 
-Node.js スクリプト（ES modules）がledger CLIコマンドをラップして各種処理を実行します：
+Node.js スクリプト（ES modules）がhledgerコマンドをラップして各種処理を実行します：
 
 - **scripts/validate-accounts.mjs** - 使用されている勘定科目がすべてaccounts.ledgerで定義されているか検証（未定義の勘定科目があればエラー）
 - **scripts/check-balance.mjs** - 貸借一致チェック
@@ -76,7 +76,7 @@ Node.js スクリプト（ES modules）がledger CLIコマンドをラップし�
 - **scripts/yearly-summary.mjs** - 年次集計の生成
 - **scripts/export-csv.mjs** - CSV形式でのエクスポート
 
-スクリプトはchild_processでledger CLIコマンドを実行し、出力をパースします。
+スクリプトはchild_processでhledgerコマンドを実行し、出力をパースします。
 
 ## 開発コマンド
 
@@ -155,17 +155,35 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 - 一貫したフォーマットのため templates/ ディレクトリのテンプレートを使用
 - すべてのスクリプトはES modules形式（package.jsonで "type": "module"）
 
-## Ledger CLI との連携
+## hledger との連携
 
-スクリプトはDockerコンテナ内のledger CLIツールと連携します。よく使うledgerコマンド：
+スクリプトはDockerコンテナ内のhledgerツールと連携します。よく使うhledgerコマンド：
 
 ```bash
 # 残高レポート
-ledger -f ledger/accounts.ledger balance
+hledger -f ledger/accounts.ledger balance
 
 # 特定勘定科目の出納帳
-ledger -f ledger/accounts.ledger register Assets:Bank
+hledger -f ledger/accounts.ledger register Assets:Bank
 
 # 複数ファイルの読み込み
-ledger -f ledger/accounts.ledger -f ledger/2026-01.ledger balance
+hledger -f ledger/accounts.ledger -f ledger/2026-01.ledger balance
+
+# 対話的に仕訳を追加（hledger 独自機能）
+hledger add -f ledger/accounts.ledger -f ledger/2026/01.ledger
+
+# ブラウザで帳簿を閲覧（hledger-web）
+hledger-web -f ledger/accounts.ledger --serve
+```
+
+### 便利なショートカットコマンド
+
+Makefileで以下のコマンドが利用可能です：
+
+```bash
+# 対話的に仕訳を追加
+make add MONTH=2026-01
+
+# ブラウザで帳簿を閲覧（http://localhost:5000）
+make web
 ```

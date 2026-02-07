@@ -17,9 +17,9 @@ function extractUsedAccounts() {
   const accounts = new Set();
 
   try {
-    // ledger accounts コマンドを使用して使用されている勘定科目を取得
+    // hledger accounts コマンドを使用して使用されている勘定科目を取得
     const fileArgs = files.map(f => `-f ${f}`).join(' ');
-    const command = `ledger ${fileArgs} accounts`;
+    const command = `hledger ${fileArgs} accounts`;
     const output = execSync(command, { encoding: 'utf-8' });
 
     const lines = output.trim().split('\n');

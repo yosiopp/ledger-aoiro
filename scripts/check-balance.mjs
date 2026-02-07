@@ -20,9 +20,9 @@ function checkBalance() {
   printFileList(files);
 
   try {
-    // ledger balance コマンドで全体のバランスを確認
+    // hledger balance コマンドで全体のバランスを確認
     const fileArgs = files.map(f => `-f ${f}`).join(' ');
-    const command = `ledger ${fileArgs} balance --no-total`;
+    const command = `hledger ${fileArgs} balance --no-total`;
 
     const output = execSync(command, {
       encoding: 'utf-8',

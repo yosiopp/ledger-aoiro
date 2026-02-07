@@ -20,14 +20,19 @@ function Show-Help {
     Write-Host "  .\ledger.ps1 yearly         - 年次集計を実行"
     Write-Host "  .\ledger.ps1 export         - CSV形式でエクスポート"
     Write-Host ""
+    Write-Host "仕訳入力コマンド:"
+    Write-Host "  .\ledger.ps1 add 2026-01    - 対話的に仕訳を追加"
+    Write-Host "  .\ledger.ps1 web            - ブラウザで帳簿を閲覧（http://localhost:5000）"
+    Write-Host ""
     Write-Host "開発用コマンド:"
-    Write-Host "  .\ledger.ps1 ledger [args]  - ledger CLIを直接実行"
+    Write-Host "  .\ledger.ps1 ledger [args]  - hledger を直接実行"
     Write-Host "  .\ledger.ps1 shell          - Dockerコンテナ内のシェルに入る"
     Write-Host "  .\ledger.ps1 build          - Dockerイメージをビルド"
     Write-Host ""
     Write-Host "使用例:"
     Write-Host "  .\ledger.ps1 init-year 2027"
     Write-Host "  .\ledger.ps1 monthly 2026-01"
+    Write-Host "  .\ledger.ps1 add 2026-01"
     Write-Host "  .\ledger.ps1 ledger -f ledger/accounts.ledger balance"
 }
 
@@ -71,12 +76,34 @@ switch ($Command.ToLower()) {
     "export" {
         Invoke-DockerCompose "node scripts/export-csv.mjs"
     }
+    "add" {
+        if ($Args.Count -eq 0) {
+            Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
+            Write-Host "使用例: .\ledger.ps1 add 2026-01"
+            exit 1
+        }
+        $month = $Args[0]
+        $yearMonth = $month.Split('-')
+        $year = $yearMonth[0]
+        $monthNum = $yearMonth[1]
+        Write-Host "📝 仕訳を追加: $month" -ForegroundColor Green
+        Write-Host "💡 Ctrl+D または Ctrl+C で終了します" -ForegroundColor Yellow
+        Write-Host ""
+        Invoke-DockerCompose "hledger add -f ledger/accounts.ledger -f ledger/$year/$monthNum.ledger"
+    }
+    "web" {
+        Write-Host "🌐 hledger-web を起動中..." -ForegroundColor Green
+        Write-Host "📖 ブラウザで http://localhost:5000 を開いてください" -ForegroundColor Cyan
+        Write-Host "💡 Ctrl+C で終了します" -ForegroundColor Yellow
+        Write-Host ""
+        docker compose run --rm --service-ports ledger hledger-web -f ledger/accounts.ledger --serve --host=0.0.0.0 --port=5000
+    }
     "ledger" {
         $ledgerArgs = $Args -join " "
         if ($ledgerArgs -eq "") {
-            Invoke-DockerCompose "ledger --version"
+            Invoke-DockerCompose "hledger --version"
         } else {
-            Invoke-DockerCompose "ledger $ledgerArgs"
+            Invoke-DockerCompose "hledger $ledgerArgs"
         }
     }
     "shell" {

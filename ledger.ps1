@@ -1,0 +1,122 @@
+# PowerShell script for ledger-aoiro (Windows用)
+# 使い方: .\ledger.ps1 <command> [options]
+
+param(
+    [Parameter(Position=0)]
+    [string]$Command = "help",
+
+    [Parameter(ValueFromRemainingArguments=$true)]
+    [string[]]$Args
+)
+
+function Show-Help {
+    Write-Host "ledger-aoiro コマンド一覧" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "基本コマンド:"
+    Write-Host "  .\ledger.ps1 check          - 貸借一致チェックを実行"
+    Write-Host "  .\ledger.ps1 validate       - 勘定科目の定義チェック"
+    Write-Host "  .\ledger.ps1 init-year [year] - 年次ディレクトリと12ヶ月分のファイルを作成"
+    Write-Host "  .\ledger.ps1 monthly 2026-01 - 月次集計を実行"
+    Write-Host "  .\ledger.ps1 yearly         - 年次集計を実行"
+    Write-Host "  .\ledger.ps1 export         - CSV形式でエクスポート"
+    Write-Host ""
+    Write-Host "仕訳入力コマンド:"
+    Write-Host "  .\ledger.ps1 add 2026-01    - 対話的に仕訳を追加"
+    Write-Host "  .\ledger.ps1 web            - ブラウザで帳簿を閲覧（http://localhost:5000）"
+    Write-Host ""
+    Write-Host "開発用コマンド:"
+    Write-Host "  .\ledger.ps1 ledger [args]  - hledger を直接実行"
+    Write-Host "  .\ledger.ps1 shell          - Dockerコンテナ内のシェルに入る"
+    Write-Host "  .\ledger.ps1 build          - Dockerイメージをビルド"
+    Write-Host ""
+    Write-Host "使用例:"
+    Write-Host "  .\ledger.ps1 init-year 2027"
+    Write-Host "  .\ledger.ps1 monthly 2026-01"
+    Write-Host "  .\ledger.ps1 add 2026-01"
+    Write-Host "  .\ledger.ps1 ledger -f ledger/accounts.ledger balance"
+}
+
+function Invoke-DockerCompose {
+    param([string]$CommandLine)
+    $cmd = "docker compose run --rm ledger $CommandLine"
+    Write-Host "実行中: $cmd" -ForegroundColor Cyan
+    Invoke-Expression $cmd
+}
+
+switch ($Command.ToLower()) {
+    "help" {
+        Show-Help
+    }
+    "check" {
+        Invoke-DockerCompose "node scripts/check-balance.mjs"
+    }
+    "validate" {
+        Invoke-DockerCompose "node scripts/validate-accounts.mjs"
+    }
+    "init-year" {
+        if ($Args.Count -eq 0) {
+            Invoke-DockerCompose "node scripts/init-year.mjs"
+        } else {
+            $year = $Args[0]
+            Invoke-DockerCompose "node scripts/init-year.mjs --year=$year"
+        }
+    }
+    "monthly" {
+        if ($Args.Count -eq 0) {
+            Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
+            Write-Host "使用例: .\ledger.ps1 monthly 2026-01"
+            exit 1
+        }
+        $month = $Args[0]
+        Invoke-DockerCompose "node scripts/monthly-summary.mjs --month $month"
+    }
+    "yearly" {
+        Invoke-DockerCompose "node scripts/yearly-summary.mjs"
+    }
+    "export" {
+        Invoke-DockerCompose "node scripts/export-csv.mjs"
+    }
+    "add" {
+        if ($Args.Count -eq 0) {
+            Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
+            Write-Host "使用例: .\ledger.ps1 add 2026-01"
+            exit 1
+        }
+        $month = $Args[0]
+        $yearMonth = $month.Split('-')
+        $year = $yearMonth[0]
+        $monthNum = $yearMonth[1]
+        Write-Host "📝 仕訳を追加: $month" -ForegroundColor Green
+        Write-Host "💡 Ctrl+D または Ctrl+C で終了します" -ForegroundColor Yellow
+        Write-Host ""
+        Invoke-DockerCompose "hledger add -f ledger/accounts.ledger -f ledger/$year/$monthNum.ledger"
+    }
+    "web" {
+        Write-Host "🌐 hledger-web を起動中..." -ForegroundColor Green
+        Write-Host "📖 ブラウザで http://localhost:5000 を開いてください" -ForegroundColor Cyan
+        Write-Host "💡 Ctrl+C で終了します" -ForegroundColor Yellow
+        Write-Host ""
+        docker compose run --rm --service-ports ledger hledger-web -f ledger/accounts.ledger --serve --host=0.0.0.0 --port=5000
+    }
+    "ledger" {
+        $ledgerArgs = $Args -join " "
+        if ($ledgerArgs -eq "") {
+            Invoke-DockerCompose "hledger --version"
+        } else {
+            Invoke-DockerCompose "hledger $ledgerArgs"
+        }
+    }
+    "shell" {
+        Invoke-DockerCompose "sh"
+    }
+    "build" {
+        Write-Host "Dockerイメージをビルド中..." -ForegroundColor Cyan
+        docker compose build
+    }
+    default {
+        Write-Host "エラー: 不明なコマンド '$Command'" -ForegroundColor Red
+        Write-Host ""
+        Show-Help
+        exit 1
+    }
+}

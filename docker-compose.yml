@@ -1,0 +1,9 @@
+services:
+  ledger:
+    build: .
+    volumes:
+      - ./ledger:/app/ledger
+      - ./scripts:/app/scripts
+    working_dir: /app
+    ports:
+      - "5000:5000"  # hledger-web 用のポート

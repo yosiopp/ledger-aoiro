@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Test coverage
+coverage/
+
+# Test temporary files
+ledger-test-temp/
+
+# Memo files (user specific)
+# ユーザーのmemoファイルを除外（README.mdは保持）
+memo/*/
+!memo/README.md
+
+# Export files
+*.csv
+transactions.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*

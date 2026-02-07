@@ -79,9 +79,37 @@ Node.js スクリプト（ES modules）がledger CLIコマンドをラップし�
 
 ## 開発コマンド
 
-### Docker ベースの開発
+### ショートカットコマンド（推奨）
 
-すべてのコマンドは、ledger CLIがインストール済みのDockerコンテナ内で実行します：
+**Mac / Linux / WSL / Git Bash:**
+
+```bash
+# Makefile を使用
+make check                  # 貸借チェック
+make validate              # 勘定科目の検証
+make monthly MONTH=2026-01 # 月次集計
+make yearly                # 年次集計
+make export                # CSV エクスポート
+make shell                 # コンテナ内のシェルに入る
+make help                  # ヘルプを表示
+```
+
+**Windows (PowerShell):**
+
+```powershell
+# PowerShell スクリプトを使用
+.\ledger.ps1 check         # 貸借チェック
+.\ledger.ps1 validate      # 勘定科目の検証
+.\ledger.ps1 monthly 2026-01 # 月次集計
+.\ledger.ps1 yearly        # 年次集計
+.\ledger.ps1 export        # CSV エクスポート
+.\ledger.ps1 shell         # コンテナ内のシェルに入る
+.\ledger.ps1 help          # ヘルプを表示
+```
+
+### 直接 Docker コマンドを実行
+
+ショートカットを使わない場合は、直接 Docker コマンドを実行できます：
 
 ```bash
 # 特定月の月次集計を実行
@@ -91,23 +119,10 @@ docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
 docker compose run --rm ledger node scripts/yearly-summary.mjs
 
 # 貸借チェックを実行
-docker compose run --rm ledger npm run check
+docker compose run --rm ledger node scripts/check-balance.mjs
 
 # 勘定科目の検証
 docker compose run --rm ledger node scripts/validate-accounts.mjs
-```
-
-### NPM スクリプト
-
-```bash
-# 貸借チェック
-npm run check
-
-# 月次集計
-npm run monthly
-
-# 年次集計
-npm run yearly
 ```
 
 ## 重要なワークフロールール

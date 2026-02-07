@@ -97,6 +97,70 @@ docker compose build
 
 詳しいセットアップ手順は [docs/setup.md](docs/setup.md) を参照してください。
 
+## ショートカットコマンド
+
+Docker コマンドを毎回入力するのは手間なので、ショートカットコマンドを用意しています。
+
+### Mac / Linux / WSL / Git Bash の場合
+
+`Makefile` を使用します：
+
+```bash
+# ヘルプを表示
+make help
+
+# 貸借チェック
+make check
+
+# 勘定科目の検証
+make validate
+
+# 月次集計（月を指定）
+make monthly MONTH=2026-01
+
+# 年次集計
+make yearly
+
+# CSV エクスポート
+make export
+
+# ledger CLI を直接実行
+make ledger ARGS="-f ledger/accounts.ledger balance"
+
+# コンテナ内のシェルに入る
+make shell
+```
+
+### Windows (PowerShell) の場合
+
+`ledger.ps1` スクリプトを使用します：
+
+```powershell
+# ヘルプを表示
+.\ledger.ps1 help
+
+# 貸借チェック
+.\ledger.ps1 check
+
+# 勘定科目の検証
+.\ledger.ps1 validate
+
+# 月次集計（月を指定）
+.\ledger.ps1 monthly 2026-01
+
+# 年次集計
+.\ledger.ps1 yearly
+
+# CSV エクスポート
+.\ledger.ps1 export
+
+# ledger CLI を直接実行
+.\ledger.ps1 ledger -f ledger/accounts.ledger balance
+
+# コンテナ内のシェルに入る
+.\ledger.ps1 shell
+```
+
 ## 基本的な使い方
 
 ### 1. 勘定科目の追加
@@ -130,6 +194,22 @@ mkdir -p ledger/2026
 
 ### 3. 集計の実行
 
+ショートカットコマンドを使用（推奨）：
+
+```bash
+# Mac / Linux / WSL / Git Bash
+make monthly MONTH=2026-01  # 月次集計
+make yearly                 # 年次集計
+make check                  # 貸借チェック
+
+# Windows (PowerShell)
+.\ledger.ps1 monthly 2026-01  # 月次集計
+.\ledger.ps1 yearly           # 年次集計
+.\ledger.ps1 check            # 貸借チェック
+```
+
+または、直接 Docker コマンドを実行：
+
 ```bash
 # 月次集計
 docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
@@ -138,7 +218,7 @@ docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
 docker compose run --rm ledger node scripts/yearly-summary.mjs
 
 # 貸借チェック
-docker compose run --rm ledger npm run check
+docker compose run --rm ledger node scripts/check-balance.mjs
 ```
 
 ## 年度切替
@@ -150,12 +230,28 @@ docker compose run --rm ledger npm run check
 
 旧年度の仕訳は `closing.ledger`、新年度の仕訳は `opening_balance.ledger` に記載します。
 
-## NPMスクリプト
+## 直接 Docker コマンドを実行する場合
+
+ショートカットを使わず、直接 Docker コマンドを実行することもできます：
 
 ```bash
-npm run check    # 貸借チェック
-npm run monthly  # 月次集計
-npm run yearly   # 年次集計
+# 貸借チェック
+docker compose run --rm ledger node scripts/check-balance.mjs
+
+# 勘定科目の検証
+docker compose run --rm ledger node scripts/validate-accounts.mjs
+
+# 月次集計
+docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+
+# 年次集計
+docker compose run --rm ledger node scripts/yearly-summary.mjs
+
+# CSV エクスポート
+docker compose run --rm ledger node scripts/export-csv.mjs
+
+# ledger CLI を直接実行
+docker compose run --rm ledger ledger -f ledger/accounts.ledger balance
 ```
 
 ## 開発・テスト（オプション）

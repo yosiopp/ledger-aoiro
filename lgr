@@ -19,7 +19,10 @@ ledger-aoiro コマンド一覧
 
 仕訳入力コマンド:
   ./lgr add <MONTH>        対話的に仕訳を追加（例: 2026-01）
-  ./lgr web                ブラウザで帳簿を閲覧（http://localhost:5000）
+  ./lgr web [MONTH]        ブラウザで帳簿を閲覧（http://localhost:5000）
+                           月指定: その月のファイルに追加
+                           月未指定: 現在の年の全月を表示、現在の月に追加
+  ./lgr web --view         閲覧専用モード（追加不可）
 
 開発用コマンド:
   ./lgr shell              Dockerコンテナ内のシェルに入る
@@ -30,6 +33,9 @@ ledger-aoiro コマンド一覧
   ./lgr init-year 2027
   ./lgr monthly 2026-01
   ./lgr add 2026-01
+  ./lgr web 2026-01
+  ./lgr web
+  ./lgr web --view
 HELP
 }
 
@@ -93,13 +99,67 @@ case "${1:-}" in
     ;;
 
   web)
-    echo "🌐 hledger-web を起動中..."
-    echo "📖 ブラウザで http://localhost:5000 を開いてください"
-    echo "💡 Ctrl+C で終了します"
-    echo ""
-    docker compose run --rm --service-ports ledger \
-      hledger-web -f ledger/accounts.ledger \
-      --serve --host=0.0.0.0 --port=5000
+    current_year=$(date +%Y)
+    current_month=$(date +%m)
+
+    # 引数解析
+    if [ "${2:-}" = "--view" ] || [ "${2:-}" = "-v" ]; then
+      # 閲覧専用モード
+      echo "🌐 hledger-web を起動中（閲覧専用モード - ${current_year}年）..."
+      echo "📖 ブラウザで http://localhost:5000 を開いてください"
+      echo "💡 Ctrl+C で終了します"
+      echo ""
+
+      # 全ての月次ファイルを読み込む
+      files="-f ledger/accounts.ledger"
+      for file in "ledger/$current_year"/*.ledger; do
+        if [ -f "$file" ]; then
+          files="$files -f $file"
+        fi
+      done
+
+      docker compose run --rm --service-ports ledger \
+        hledger-web $files --capabilities=view \
+        --serve --host=0.0.0.0 --port=5000
+
+    elif [ -n "${2:-}" ]; then
+      # 月が指定された場合
+      year=$(echo "$2" | cut -d'-' -f1)
+      month=$(echo "$2" | cut -d'-' -f2)
+      echo "🌐 hledger-web を起動中（追加先: ledger/$year/$month.ledger）..."
+      echo "📖 ブラウザで http://localhost:5000 を開いてください"
+      echo "💡 Ctrl+C で終了します"
+      echo ""
+
+      docker compose run --rm --service-ports ledger \
+        hledger-web -f "ledger/$year/$month.ledger" -f ledger/accounts.ledger \
+        --serve --host=0.0.0.0 --port=5000
+
+    else
+      # 月指定なし - 現在の年の全ファイルを読み込み、現在の月に追加
+      echo "🌐 hledger-web を起動中（追加先: ledger/$current_year/$current_month.ledger）..."
+      echo "📖 ${current_year}年の全ての月を表示します"
+      echo "📝 閲覧専用にするには: ./lgr web --view"
+      echo "💡 Ctrl+C で終了します"
+      echo ""
+
+      # 現在の月のファイルを最初に指定（追加先になる）
+      files="-f ledger/$current_year/$current_month.ledger"
+
+      # 他の月のファイルを追加
+      for file in "ledger/$current_year"/*.ledger; do
+        if [ -f "$file" ] && [ "$file" != "ledger/$current_year/$current_month.ledger" ]; then
+          files="$files -f $file"
+        fi
+      done
+
+      # accounts.ledger を最後に追加
+      files="$files -f ledger/accounts.ledger"
+
+      docker compose run --rm --service-ports ledger \
+        hledger-web $files \
+        --serve --host=0.0.0.0 --port=5000
+    fi
     ;;
 
   shell)

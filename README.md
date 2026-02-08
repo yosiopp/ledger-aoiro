@@ -23,21 +23,7 @@
 - 勘定科目の定義を一元管理し、未定義の使用を検証
 - 月次・年次の集計を自動生成
 - **テンプレートとして利用**：このリポジトリをベースに自分専用の帳簿リポジトリを作成
-- **ledgerとmemoの責務分担**：会計の事実（ledger）と判断の理由（memo）を分離管理
-
-### 設計思想：なぜledgerとmemoを分けるのか
-
-このプロジェクトの重要な設計思想：
-
-- **ledger = 「会計の事実」** - 取引の客観的な記録
-- **memo = 「判断の理由」** - なぜその勘定科目を選んだか、按分比率の根拠など
-- **税務 = 結果＋理由のセット** - 税務調査では両方が必要
-
-**例：** 自宅兼事務所の電気代を50%按分した場合
-- **ledgerファイル** → 「5000円を経費計上した」という事実
-- **memoファイル** → 「なぜ50%なのか（面積比の計算根拠）」を記録
-
-この分離により、将来の税務調査や自分自身の振り返りで「なぜこう判断したのか」を説明できます。
+- **ledgerとmemoの責務分担**：会計の事実（ledger）と判断の理由（memo）を分離管理（詳細は [ディレクトリ構成](docs/structure.md) を参照）
 
 ## 前提条件
 
@@ -87,17 +73,17 @@ git commit -m "Initial commit from ledger-aoiro template"
 docker compose build
 
 # 動作確認
-docker compose run --rm ledger hledger --version
+docker compose run --rm ledger-aoiro hledger --version
 ```
 
 ### 3. 年次ディレクトリの作成
 
 ```bash
 # 現在の年度のディレクトリを作成
-./lgr init-year
+./lgr begin
 
 # 特定の年度を指定
-./lgr init-year 2027
+./lgr begin 2027
 ```
 
 > [!NOTE]
@@ -110,9 +96,11 @@ docker compose run --rm ledger hledger --version
 **Claude Code で入力（最も簡単・推奨）：**
 
 VSCode で Claude Code 拡張機能を使っている場合：
+
 ```
 /ledger-add
 ```
+
 AI が対話形式で取引内容を聞き取り、自動的に適切な勘定科目を選択して記帳します。
 
 **対話的に入力（hledger add）：**
@@ -122,6 +110,7 @@ AI が対話形式で取引内容を聞き取り、自動的に適切な勘定�
 ```
 
 ガイド付きプロンプトで以下を入力：
+
 - 日付（例：2026/01/15）
 - 説明（例：事務用品購入）
 - 勘定科目（補完機能付き）

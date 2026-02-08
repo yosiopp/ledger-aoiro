@@ -169,7 +169,7 @@ Node.js スクリプト（ES modules）がhledgerコマンドをラップして�
 
 - **scripts/validate-accounts.mjs** - 使用されている勘定科目がすべてaccounts.ledgerで定義されているか検証（未定義の勘定科目があればエラー）
 - **scripts/check-balance.mjs** - 貸借一致チェック
-- **scripts/init-year.mjs** - 年次ディレクトリと12ヶ月分の月次ファイルを一括作成
+- **scripts/init-year.mjs** - 年次ディレクトリと12ヶ月分の月次ファイルを一括作成（`./lgr begin`コマンドから呼び出される）
 - **scripts/monthly-summary.mjs** - 月次集計の生成
 - **scripts/yearly-summary.mjs** - 年次集計の生成
 - **scripts/export-csv.mjs** - CSV形式でのエクスポート
@@ -202,16 +202,16 @@ Node.js スクリプト（ES modules）がhledgerコマンドをラップして�
 
 ```bash
 # 特定月の月次集計を実行
-docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+docker compose run --rm ledger-aoiro node scripts/monthly-summary.mjs --month 2026-01
 
 # 年次集計を実行
-docker compose run --rm ledger node scripts/yearly-summary.mjs
+docker compose run --rm ledger-aoiro node scripts/yearly-summary.mjs
 
 # 貸借チェックを実行
-docker compose run --rm ledger node scripts/check-balance.mjs
+docker compose run --rm ledger-aoiro node scripts/check-balance.mjs
 
 # 勘定科目の検証
-docker compose run --rm ledger node scripts/validate-accounts.mjs
+docker compose run --rm ledger-aoiro node scripts/validate-accounts.mjs
 ```
 
 ## 重要なワークフロールール

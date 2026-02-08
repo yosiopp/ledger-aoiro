@@ -1,5 +1,5 @@
 services:
-  ledger:
+  ledger-aoiro:
     build: .
     volumes:
       - ./ledger:/app/ledger

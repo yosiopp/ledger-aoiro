@@ -17,7 +17,7 @@
   "scripts": {
     "check": "node scripts/check-balance.mjs",
     "validate": "node scripts/validate-accounts.mjs",
-    "init-year": "node scripts/init-year.mjs",
+    "begin": "node scripts/init-year.mjs",
     "monthly": "node scripts/monthly-summary.mjs",
     "yearly": "node scripts/yearly-summary.mjs",
     "export": "node scripts/export-csv.mjs",

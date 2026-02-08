@@ -102,8 +102,8 @@ describe("yourFunction", () => {
    ./lgr monthly 2026-01
 
    # または Docker コマンドで直接実行
-   docker compose run --rm ledger npm run check
-   docker compose run --rm ledger node scripts/monthly-summary.mjs
+   docker compose run --rm ledger-aoiro npm run check
+   docker compose run --rm ledger-aoiro node scripts/monthly-summary.mjs
    ```
 
 3. ドキュメントの更新

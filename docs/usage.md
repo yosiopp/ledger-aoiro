@@ -12,8 +12,8 @@ Docker コマンドを毎回入力するのは手間なので、統一コマン�
 ./lgr help            # ヘルプを表示
 ./lgr check           # 貸借チェック
 ./lgr validate        # 勘定科目の検証
-./lgr init-year       # 年次ディレクトリの初期化（現在の年）
-./lgr init-year 2027  # 年次ディレクトリの初期化（年を指定）
+./lgr begin           # 年次ディレクトリの初期化（現在の年）
+./lgr begin 2027      # 年次ディレクトリの初期化（年を指定）
 ./lgr monthly 2026-01 # 月次集計（月を指定）
 ./lgr yearly          # 年次集計
 ./lgr export          # CSV エクスポート
@@ -52,10 +52,10 @@ account X:Books
 
 ```bash
 # 現在の年度のディレクトリを作成
-./lgr init-year
+./lgr begin
 
 # 特定の年度を指定
-./lgr init-year 2027
+./lgr begin 2027
 ```
 
 このコマンドで以下が自動的に作成されます：
@@ -107,7 +107,6 @@ account X:Books
 
 ブラウザで http://localhost:5000 が開き、残高や取引履歴を視覚的に確認できます。
 
-
 ### 6. hledger コマンドの直接実行
 
 高度な分析やカスタムレポートが必要な場合は、`lgr exec` で hledger コマンドを直接実行できます：
@@ -140,23 +139,23 @@ account X:Books
 ```bash
 # 貸借チェック
 ./lgr check
-# docker compose run --rm ledger npm run check
+# docker compose run --rm ledger-aoiro npm run check
 
 # 勘定科目の検証
 ./lgr validate
-# docker compose run --rm ledger npm run validate
+# docker compose run --rm ledger-aoiro npm run validate
 
 # 月次集計（月を指定）
 ./lgr monthly 2026-01
-# docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+# docker compose run --rm ledger-aoiro node scripts/monthly-summary.mjs --month 2026-01
 
 # 年次集計
 ./lgr yearly
-# docker compose run --rm ledger npm run yearly
+# docker compose run --rm ledger-aoiro npm run yearly
 
 # CSV エクスポート
 ./lgr export
-# docker compose run --rm ledger npm run export
+# docker compose run --rm ledger-aoiro npm run export
 ```
 
 ### hledger を直接実行
@@ -164,21 +163,15 @@ account X:Books
 高度な分析やカスタムレポートが必要な場合は、hledger コマンドを直接実行できます。
 
 ```bash
-# 特定勘定科目の残高を確認
-docker compose run --rm ledger hledger balance A:現金
-
-# 特定勘定科目の出納帳（取引履歴）
-docker compose run --rm ledger hledger register A:銀行:事業用
-
 # 複数ファイルを指定して残高レポート
-docker compose run --rm ledger hledger \
+docker compose run --rm ledger-aoiro hledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
   balance
 
 # 複数月をまとめて分析
-docker compose run --rm ledger hledger \
+docker compose run --rm ledger-aoiro hledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
@@ -277,6 +270,7 @@ Claude Code を使っている場合、AI による帳簿管理支援機能を�
 #### 1. `/ledger-add` - 日々の仕訳入力
 
 Claude が対話形式で取引内容を確認し、自動的に：
+
 - 適切な勘定科目を選択
 - hledger形式の仕訳を作成
 - 該当月のファイルに追記
@@ -285,6 +279,7 @@ Claude が対話形式で取引内容を確認し、自動的に：
 **使い方:** Claude Code で `/ledger-add` と入力
 
 **実行例:**
+
 ```
 You: /ledger-add
 Claude: 仕訳を入力します。取引日、内容、金額、支払方法を教えてください。

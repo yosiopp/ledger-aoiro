@@ -125,7 +125,7 @@ account X:Books
 
 ```bash
 # 年別ディレクトリと月次ファイルを作成
-./lgr init-year 2026
+./lgr begin 2026
 ```
 
 作成された `ledger/2026/01.ledger` を編集して、テスト用の取引を記録します：
@@ -159,7 +159,7 @@ account X:Books
 
 これで準備完了です！以下のワークフローで日々の記帳を進めていきます：
 
-1. **年別ディレクトリの作成** - `./lgr init-year YYYY`
+1. **年別ディレクトリの作成** - `./lgr begin YYYY`
 2. **取引の記録** - 日々の取引を `ledger/YYYY/MM.ledger` に記帳
 3. **検証** - `./lgr check` で貸借が一致しているか確認
 4. **月次集計** - `./lgr monthly YYYY-MM` で月次確認

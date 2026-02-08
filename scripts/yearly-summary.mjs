@@ -40,7 +40,7 @@ function yearlySummary(year) {
     console.log('─'.repeat(70));
 
     console.log('\n💰 売上高');
-    const salesCmd = `hledger ${fileArgs} balance Income:Sales --begin ${beginDate} --end ${endDate} --depth 3`;
+    const salesCmd = `hledger ${fileArgs} balance R:売上 --begin ${beginDate} --end ${endDate} --depth 3`;
     try {
       const sales = execSync(salesCmd, { encoding: 'utf-8' });
       console.log(sales || '   0 JPY');
@@ -49,7 +49,7 @@ function yearlySummary(year) {
     }
 
     console.log('\n💵 その他の収益');
-    const otherIncomeCmd = `hledger ${fileArgs} balance Income --begin ${beginDate} --end ${endDate} --depth 3`;
+    const otherIncomeCmd = `hledger ${fileArgs} balance R: --begin ${beginDate} --end ${endDate} --depth 3`;
     try {
       const otherIncome = execSync(otherIncomeCmd, { encoding: 'utf-8' });
       console.log(otherIncome || '   0 JPY');
@@ -62,16 +62,19 @@ function yearlySummary(year) {
     console.log('─'.repeat(70));
 
     const expenseCategories = [
-      { name: '広告宣伝費', account: 'Expenses:Advertising' },
-      { name: '消耗品費', account: 'Expenses:Supplies' },
-      { name: '通信費', account: 'Expenses:Communication' },
-      { name: '水道光熱費', account: 'Expenses:Utilities' },
-      { name: '地代家賃', account: 'Expenses:Rent' },
-      { name: '旅費交通費', account: 'Expenses:Travel' },
-      { name: '会議費・交際費', account: 'Expenses:Meals' },
-      { name: '外注費', account: 'Expenses:Outsourcing' },
-      { name: '租税公課', account: 'Expenses:Taxes' },
-      { name: '減価償却費', account: 'Expenses:Depreciation' },
+      { name: '広告宣伝費', account: 'X:広告宣伝費' },
+      { name: '消耗品費', account: 'X:消耗品費' },
+      { name: '通信費', account: 'X:通信費' },
+      { name: '水道光熱費', account: 'X:水道光熱費' },
+      { name: '地代家賃', account: 'X:地代家賃' },
+      { name: '旅費交通費', account: 'X:旅費交通費' },
+      { name: '会議費・交際費', account: 'X:会議費交際費' },
+      { name: '外注費', account: 'X:外注費' },
+      { name: '租税公課', account: 'X:租税公課' },
+      { name: '減価償却費', account: 'X:減価償却費' },
+      { name: '支払手数料', account: 'X:支払手数料' },
+      { name: '新聞図書費', account: 'X:新聞図書費' },
+      { name: '雑費', account: 'X:雑費' },
     ];
 
     for (const { name, account } of expenseCategories) {
@@ -88,7 +91,7 @@ function yearlySummary(year) {
     // 損益
     console.log('\n【当期純損益】');
     console.log('─'.repeat(70));
-    const plCmd = `hledger ${fileArgs} balance Income Expenses --begin ${beginDate} --end ${endDate}`;
+    const plCmd = `hledger ${fileArgs} balance R: X: --begin ${beginDate} --end ${endDate}`;
     try {
       const pl = execSync(plCmd, { encoding: 'utf-8' });
       console.log(pl);
@@ -108,7 +111,7 @@ function yearlySummary(year) {
     // 資産の部
     console.log('【資産の部】');
     console.log('─'.repeat(70));
-    const assetsCmd = `hledger ${fileArgs} balance Assets --depth 3`;
+    const assetsCmd = `hledger ${fileArgs} balance A: --depth 3`;
     try {
       const assets = execSync(assetsCmd, { encoding: 'utf-8' });
       console.log(assets || '   0 JPY');
@@ -119,7 +122,7 @@ function yearlySummary(year) {
     // 負債の部
     console.log('\n【負債の部】');
     console.log('─'.repeat(70));
-    const liabilitiesCmd = `hledger ${fileArgs} balance Liabilities --depth 3`;
+    const liabilitiesCmd = `hledger ${fileArgs} balance L: --depth 3`;
     try {
       const liabilities = execSync(liabilitiesCmd, { encoding: 'utf-8' });
       console.log(liabilities || '   0 JPY');
@@ -130,7 +133,7 @@ function yearlySummary(year) {
     // 純資産の部
     console.log('\n【純資産の部】');
     console.log('─'.repeat(70));
-    const equityCmd = `hledger ${fileArgs} balance Equity --depth 3`;
+    const equityCmd = `hledger ${fileArgs} balance E: --depth 3`;
     try {
       const equity = execSync(equityCmd, { encoding: 'utf-8' });
       console.log(equity || '   0 JPY');

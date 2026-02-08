@@ -66,6 +66,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **ledger/YYYY/MM.ledger** - 年別ディレクトリの下に月次の取引ファイルを配置（例：ledger/2026/01.ledger）
 
 **ファイル配置の規則：**
+
 - 年ごとにディレクトリを作成（例：`ledger/2026/`）
 - 各月のファイルは `MM.ledger` 形式（例：`01.ledger`, `02.ledger`）
 - この階層構造により、長期間の帳簿管理が整理しやすくなります
@@ -88,6 +89,79 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 この命名規則により、入力が簡潔で、hledgerの `balancesheet`、`incomestatement` などの便利機能が正しく動作します。
 
 青色申告決算書とhledger勘定科目の対応表は [docs/accounts.md](docs/accounts.md) を参照してください。
+
+### 勘定科目の実装規約
+
+**重要：** スクリプトでhledgerコマンドを実行する際は、以下の規約に従ってください：
+
+#### 1. タイプコードによる勘定科目指定
+
+hledgerコマンドで勘定科目を指定する場合は、**タイプコード（A:, L:, E:, R:, X:）を使用**します。英語の勘定科目名（Assets, Liabilities, Income, Expenses など）は使用しません。
+
+**正しい例：**
+
+```javascript
+// 資産の集計
+const cmd = `hledger ${fileArgs} balance A: --depth 2`;
+
+// 収益と費用の集計
+const cmd = `hledger ${fileArgs} balance R: X: --begin ${beginDate} --end ${endDate}`;
+```
+
+**誤った例（使用禁止）：**
+
+```javascript
+// ❌ 英語名は使用しない
+const cmd = `hledger ${fileArgs} balance Assets --depth 2`;
+const cmd = `hledger ${fileArgs} balance Income Expenses`;
+```
+
+#### 2. 具体的な勘定科目の指定
+
+特定の勘定科目を指定する場合は、[ledger/accounts.ledger](ledger/accounts.ledger) で定義されている**日本語の勘定科目名**を使用します。
+
+**正しい例：**
+
+```javascript
+// 売上高の集計
+const cmd = `hledger ${fileArgs} balance R:売上 --begin ${beginDate} --end ${endDate}`;
+
+// 個別の経費科目
+const expenseCategories = [
+  { name: "広告宣伝費", account: "X:広告宣伝費" },
+  { name: "消耗品費", account: "X:消耗品費" },
+  { name: "通信費", account: "X:通信費" },
+  // ...
+];
+```
+
+**誤った例（使用禁止）：**
+
+```javascript
+// ❌ 英語名は使用しない
+const cmd = `hledger ${fileArgs} balance Income:Sales`;
+const cmd = `hledger ${fileArgs} balance Expenses:Advertising`;
+```
+
+#### 3. 対応表
+
+| 英語名（使用禁止） | 正しいタイプコード | 説明   |
+| ------------------ | ------------------ | ------ |
+| Assets             | `A:`               | 資産   |
+| Liabilities        | `L:`               | 負債   |
+| Equity             | `E:`               | 純資産 |
+| Income / Revenue   | `R:`               | 収益   |
+| Expenses           | `X:`               | 費用   |
+
+#### 4. 実装箇所
+
+この規約は以下のスクリプトで適用されています：
+
+- **scripts/monthly-summary.mjs** - 月次集計
+- **scripts/yearly-summary.mjs** - 年次集計
+- その他、hledgerコマンドを実行するすべてのスクリプト
+
+新しいスクリプトを作成する場合も、この規約に従ってください。
 
 ### スクリプト構成
 
@@ -151,6 +225,7 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 年度をまたぐときの処理：
 
 1. 利益を繰越利益に振替：
+
    ```
    利益 → E:繰越利益
    ```

@@ -129,7 +129,7 @@ account X:Books
 > [!TIP]
 > 基本的な残高確認や取引履歴の閲覧には `./lgr web` を使用する方が便利です。ブラウザで視覚的に確認できます。
 
-## 直接 Docker コマンドを実行する場合（高度な使い方）
+## 高度な使い方（直接 Docker コマンドを実行する場合）
 
 基本的な操作には `lgr` コマンドの使用を推奨しますが、直接 Docker Compose コマンドを実行することもできます。
 
@@ -140,23 +140,23 @@ account X:Books
 ```bash
 # 貸借チェック
 ./lgr check
-# または: docker compose run --rm ledger node scripts/check-balance.mjs
+# docker compose run --rm ledger npm run check
 
 # 勘定科目の検証
 ./lgr validate
-# または: docker compose run --rm ledger node scripts/validate-accounts.mjs
+# docker compose run --rm ledger npm run validate
 
 # 月次集計（月を指定）
 ./lgr monthly 2026-01
-# または: docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+# docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
 
 # 年次集計
 ./lgr yearly
-# または: docker compose run --rm ledger node scripts/yearly-summary.mjs
+# docker compose run --rm ledger npm run yearly
 
 # CSV エクスポート
 ./lgr export
-# または: docker compose run --rm ledger node scripts/export-csv.mjs
+# docker compose run --rm ledger npm run export
 ```
 
 ### hledger を直接実行
@@ -192,7 +192,7 @@ docker compose run --rm ledger hledger \
 ### コンテナ内のシェルに入る
 
 ```bash
-docker compose run --rm ledger /bin/bash
+./lgr shell
 
 # シェル内で ledger コマンドを自由に実行
 ledger -f ledger/accounts.ledger balance
@@ -268,7 +268,7 @@ Get-ExecutionPolicy
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-## Claude Code Skills による帳簿管理（補助的な方法）
+## Claude Code Skills による帳簿管理
 
 Claude Code を使っている場合、AI による帳簿管理支援機能を利用できます。
 

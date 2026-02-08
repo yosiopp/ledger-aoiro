@@ -14,7 +14,7 @@ ledger-aoiro コマンド一覧
   ./lgr validate           勘定科目の定義チェック
   ./lgr init-year [YEAR]   年次ディレクトリと12ヶ月分のファイルを作成
   ./lgr monthly <MONTH>    月次集計（例: 2026-01）
-  ./lgr yearly             年次集計を実行
+  ./lgr yearly [YEAR]      年次集計を実行（年指定なしは現在の年）
   ./lgr export             CSV形式でエクスポート
 
 仕訳入力コマンド:
@@ -37,6 +37,7 @@ ledger-aoiro コマンド一覧
 使用例:
   ./lgr init-year 2027
   ./lgr monthly 2026-01
+  ./lgr yearly 2026
   ./lgr add 2026-01
   ./lgr web 2026-01
   ./lgr web
@@ -77,7 +78,11 @@ case "${1:-}" in
     ;;
 
   yearly)
-    run_ledger node scripts/yearly-summary.mjs
+    if [ -n "${2:-}" ]; then
+      run_ledger node scripts/yearly-summary.mjs --year "$2"
+    else
+      run_ledger node scripts/yearly-summary.mjs
+    fi
     ;;
 
   export)

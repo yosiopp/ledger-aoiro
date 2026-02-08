@@ -17,7 +17,7 @@ function Show-Help {
     Write-Host "  .\ledger.ps1 validate       - 勘定科目の定義チェック"
     Write-Host "  .\ledger.ps1 init-year [year] - 年次ディレクトリと12ヶ月分のファイルを作成"
     Write-Host "  .\ledger.ps1 monthly 2026-01 - 月次集計を実行"
-    Write-Host "  .\ledger.ps1 yearly         - 年次集計を実行"
+    Write-Host "  .\ledger.ps1 yearly [year]  - 年次集計を実行（年指定なしは現在の年）"
     Write-Host "  .\ledger.ps1 export         - CSV形式でエクスポート"
     Write-Host ""
     Write-Host "仕訳入力コマンド:"
@@ -39,6 +39,7 @@ function Show-Help {
     Write-Host "使用例:"
     Write-Host "  .\ledger.ps1 init-year 2027"
     Write-Host "  .\ledger.ps1 monthly 2026-01"
+    Write-Host "  .\ledger.ps1 yearly 2026"
     Write-Host "  .\ledger.ps1 add 2026-01"
     Write-Host "  .\ledger.ps1 web 2026-01"
     Write-Host "  .\ledger.ps1 web"
@@ -81,7 +82,12 @@ switch ($Command.ToLower()) {
         Invoke-DockerCompose "node scripts/monthly-summary.mjs --month $month"
     }
     "yearly" {
-        Invoke-DockerCompose "node scripts/yearly-summary.mjs"
+        if ($Args.Count -eq 0) {
+            Invoke-DockerCompose "node scripts/yearly-summary.mjs"
+        } else {
+            $year = $Args[0]
+            Invoke-DockerCompose "node scripts/yearly-summary.mjs --year $year"
+        }
     }
     "export" {
         Invoke-DockerCompose "node scripts/export-csv.mjs"

@@ -12,13 +12,17 @@ ledger-aoiro コマンド一覧
 基本コマンド:
   ./lgr check              貸借一致チェックを実行
   ./lgr validate           勘定科目の定義チェック
-  ./lgr init-year [YEAR]   年次ディレクトリと12ヶ月分のファイルを作成
+  ./lgr begin [YEAR]       年次ディレクトリと12ヶ月分のファイルを作成
   ./lgr monthly <MONTH>    月次集計（例: 2026-01）
   ./lgr yearly [YEAR]      年次集計を実行（年指定なしは現在の年）
   ./lgr export             CSV形式でエクスポート
 
 仕訳入力コマンド:
   ./lgr add <MONTH>        対話的に仕訳を追加（例: 2026-01）
+  ./lgr add <MONTH> <DATE> <DESC> <ACC1> <AMT1> <ACC2> [AMT2]
+                           非対話モードで仕訳を追加
+                           例: ./lgr add 2026-01 2026/01/15 "事務用品購入" \
+                                        "X:消耗品費" "3000 JPY" "A:銀行:事業用"
   ./lgr web [MONTH]        ブラウザで帳簿を閲覧（http://localhost:5000）
                            月指定: その月のファイルに追加
                            月未指定: 現在の年の全月を表示、現在の月に追加
@@ -35,10 +39,11 @@ ledger-aoiro コマンド一覧
   ./lgr help               このヘルプを表示
 
 使用例:
-  ./lgr init-year 2027
+  ./lgr begin 2027
   ./lgr monthly 2026-01
   ./lgr yearly 2026
   ./lgr add 2026-01
+  ./lgr add 2026-01 2026/01/15 "事務用品購入" "X:消耗品費" "3000 JPY" "A:銀行:事業用"
   ./lgr web 2026-01
   ./lgr web
   ./lgr web --view
@@ -47,7 +52,7 @@ HELP
 
 # Docker Compose コマンドのラッパー
 run_ledger() {
-  docker compose run --rm ledger "$@"
+  docker compose run --rm ledger-aoiro "$@"
 }
 
 # メインロジック
@@ -60,7 +65,7 @@ case "${1:-}" in
     run_ledger node scripts/validate-accounts.mjs
     ;;
 
-  init-year)
+  begin)
     if [ -n "${2:-}" ]; then
       run_ledger node scripts/init-year.mjs --year="$2"
     else
@@ -92,20 +97,68 @@ case "${1:-}" in
   add)
     if [ -z "${2:-}" ]; then
       echo "エラー: 月を指定してください（例: 2026-01）" >&2
-      echo "使用例: ./lgr add 2026-01" >&2
+      echo "使用例（対話モード）: ./lgr add 2026-01" >&2
+      echo "使用例（非対話モード）: ./lgr add 2026-01 2026/01/15 \"説明\" \"勘定科目1\" \"金額1\" \"勘定科目2\" [金額2]" >&2
       exit 1
     fi
-    echo "📝 仕訳を追加: $2"
-    echo "💡 Ctrl+D または Ctrl+C で終了します"
-    echo ""
 
     # YYYY-MM を YYYY と MM に分割
     year=$(echo "$2" | cut -d'-' -f1)
     month=$(echo "$2" | cut -d'-' -f2)
+    ledger_file="ledger/$year/$month.ledger"
 
-    run_ledger hledger add \
-      -f ledger/accounts.ledger \
-      -f "ledger/$year/$month.ledger"
+    # 非対話モード：引数が6個以上ある場合
+    if [ $# -ge 7 ]; then
+      date="$3"
+      description="$4"
+      account1="$5"
+      amount1="$6"
+      account2="$7"
+      amount2="${8:-}"
+
+      echo "📝 仕訳を追加（非対話モード）: $ledger_file"
+      echo ""
+
+      # 仕訳を作成してファイルに追記
+      {
+        echo ""
+        echo "$date * $description"
+        echo "    $account1    $amount1"
+        if [ -n "$amount2" ]; then
+          echo "    $account2    $amount2"
+        else
+          echo "    $account2"
+        fi
+      } >> "$ledger_file"
+
+      echo "✅ 仕訳を追加しました："
+      echo ""
+      echo "$date * $description"
+      echo "    $account1    $amount1"
+      if [ -n "$amount2" ]; then
+        echo "    $account2    $amount2"
+      else
+        echo "    $account2"
+      fi
+      echo ""
+
+      # 検証を実行
+      echo "🔍 勘定科目を検証中..."
+      ./lgr validate || exit 1
+      echo ""
+      echo "⚖️  貸借バランスを確認中..."
+      ./lgr check || exit 1
+
+    else
+      # 対話モード
+      echo "📝 仕訳を追加: $2"
+      echo "💡 Ctrl+D または Ctrl+C で終了します"
+      echo ""
+
+      run_ledger hledger add \
+        -f ledger/accounts.ledger \
+        -f "$ledger_file"
+    fi
     ;;
 
   exec)
@@ -139,7 +192,7 @@ case "${1:-}" in
         fi
       done
 
-      docker compose run --rm --service-ports ledger \
+      docker compose run --rm --service-ports ledger-aoiro \
         hledger-web $files --capabilities=view \
         --serve --host=0.0.0.0 --port=5000
 
@@ -152,7 +205,7 @@ case "${1:-}" in
       echo "💡 Ctrl+C で終了します"
       echo ""
 
-      docker compose run --rm --service-ports ledger \
+      docker compose run --rm --service-ports ledger-aoiro \
         hledger-web -f "ledger/$year/$month.ledger" -f ledger/accounts.ledger \
         --serve --host=0.0.0.0 --port=5000
 
@@ -177,7 +230,7 @@ case "${1:-}" in
       # accounts.ledger を最後に追加
       files="$files -f ledger/accounts.ledger"
 
-      docker compose run --rm --service-ports ledger \
+      docker compose run --rm --service-ports ledger-aoiro \
         hledger-web $files \
         --serve --host=0.0.0.0 --port=5000
     fi

@@ -244,6 +244,51 @@ Get-ExecutionPolicy
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
+## Claude Code Skills による帳簿管理（補助的な方法）
+
+Claude Code を使っている場合、AI による帳簿管理支援機能を利用できます。
+
+### 利用可能な Skills
+
+#### 1. `/ledger-add` - 日々の仕訳入力
+
+Claude が対話形式で取引内容を確認し、自動的に：
+- 適切な勘定科目を選択
+- hledger形式の仕訳を作成
+- 該当月のファイルに追記
+- 勘定科目と貸借の検証を実行
+
+**使い方:** Claude Code で `/ledger-add` と入力
+
+**実行例:**
+```
+You: /ledger-add
+Claude: 仕訳を入力します。取引日、内容、金額、支払方法を教えてください。
+
+You: 1月15日にインターネット料金5000円を事業用銀行口座から支払いました
+Claude: 以下の仕訳を ledger/2026/01.ledger に追加します：
+        2026/01/15 * 通信費（インターネット料金）
+            X:通信費                   5000 JPY
+            A:銀行:事業用
+
+        ✓ 勘定科目検証: OK
+        ✓ 貸借一致チェック: OK
+```
+
+#### 2. `/ledger-monthly` - 月次チェック・集計
+
+指定月の帳簿を検証し、月次レポートを生成します。
+
+**使い方:** Claude Code で `/ledger-monthly` と入力
+
+#### 3. `/ledger-annual` - 年次集計・確定申告支援
+
+年度全体の集計と確定申告用レポートを生成します。
+
+**使い方:** Claude Code で `/ledger-annual` と入力
+
+詳細は [.claude/skills/README.md](../.claude/skills/README.md) を参照してください。
+
 ## 関連ドキュメント
 
 - [workflow.md](workflow.md) - 日常的な記帳フロー

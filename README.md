@@ -17,6 +17,7 @@
 
 - 複式簿記による記帳（青色申告65万円控除対応）
 - Docker環境で hledger を簡単に使える
+- **Claude Code Skills による自動化**：日々の仕訳入力、月次チェック、確定申告準備を AI がサポート
 - **対話的な仕訳入力**：`hledger add` コマンドでガイド付き入力
 - **ブラウザUI**：`hledger-web` でブラウザから帳簿を閲覧・編集
 - 勘定科目の定義を一元管理し、未定義の使用を検証
@@ -94,7 +95,15 @@ docker compose run --rm ledger hledger --version
 
 ### 5. 仕訳を入力する
 
-**対話的に入力（推奨）：**
+**Claude Code で入力（最も簡単・推奨）：**
+
+VSCode で Claude Code 拡張機能を使っている場合：
+```
+/ledger-add
+```
+AI が対話形式で取引内容を聞き取り、自動的に適切な勘定科目を選択して記帳します。
+
+**対話的に入力（hledger add）：**
 
 ```bash
 ./lgr add 2026-01
@@ -131,7 +140,7 @@ docker compose run --rm ledger hledger --version
 
 - **[セットアップガイド](docs/setup.md)** - テンプレートの初期設定と使い始め方
 - **[ディレクトリ構成](docs/structure.md)** - プロジェクトの構造とファイルの役割
-- **[コマンド使用方法](docs/usage.md)** - ショートカットコマンドと各種操作
+- **[コマンド使用方法](docs/usage.md)** - ショートカットコマンドと各種操作（Claude Code Skills の使い方）
 
 ### 日常的な使い方
 

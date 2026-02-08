@@ -20,25 +20,15 @@
 
 年度が変わったら、まず年次ディレクトリと12ヶ月分のファイルを一括作成します。
 
-**Mac / Linux / WSL / Git Bash:**
-
 ```bash
 # 現在の年度のディレクトリを作成
-make init-year
+./lgr init-year
 
 # 特定の年度を指定
-make init-year YEAR=2027
+./lgr init-year 2027
 ```
 
-**Windows (PowerShell):**
-
-```powershell
-# 現在の年度のディレクトリを作成
-.\ledger.ps1 init-year
-
-# 特定の年度を指定
-.\ledger.ps1 init-year 2027
-```
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 このコマンドで以下が自動的に作成されます：
 - `ledger/YYYY/` ディレクトリ

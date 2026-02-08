@@ -40,8 +40,9 @@ ledger-aoiro/
 │   └── tax-filing.md              # 確定申告ガイド
 ├── docker-compose.yml              # Docker 設定
 ├── Dockerfile                      # Docker イメージ定義
-├── Makefile                        # Mac/Linux 用ショートカット
-├── ledger.ps1                      # Windows 用ショートカット
+├── lgr                             # Mac/Linux 用コマンド（POSIX Shell）
+├── lgr.bat                         # Windows 用コマンド
+├── ledger.ps1                      # PowerShell実装（lgr.batから呼ばれる）
 ├── package.json                    # Node.js プロジェクト設定
 ├── vitest.config.mjs               # テスト設定
 ├── CLAUDE.md                       # Claude Code 用開発ガイド
@@ -212,23 +213,20 @@ docker compose run --rm ledger node scripts/check-balance.mjs
 
 hledger をインストールした Docker イメージの定義ファイル。
 
-### Makefile
+### lgr / lgr.bat
 
-Mac / Linux / WSL / Git Bash 用のショートカットコマンド集。
+プロジェクトの統一コマンド。環境に応じて自動的に適切なスクリプトを実行します。
 
 ```bash
-make check    # 貸借チェック
-make monthly MONTH=2026-01  # 月次集計
+./lgr check           # 貸借チェック
+./lgr monthly 2026-01 # 月次集計
 ```
+
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 ### ledger.ps1
 
-Windows PowerShell 用のショートカットスクリプト。
-
-```powershell
-.\ledger.ps1 check         # 貸借チェック
-.\ledger.ps1 monthly 2026-01  # 月次集計
-```
+PowerShell実装スクリプト。`lgr.bat` から呼び出されます。直接実行も可能ですが、`lgr` コマンドの使用を推奨します。
 
 ### package.json
 

@@ -4,79 +4,25 @@
 
 ## ショートカットコマンド
 
-Docker コマンドを毎回入力するのは手間なので、プラットフォーム別にショートカットコマンドを用意しています。
+Docker コマンドを毎回入力するのは手間なので、統一コマンド `lgr` を用意しています。
 
-### Mac / Linux / WSL / Git Bash の場合
-
-`Makefile` を使用します：
+### 基本的な使い方
 
 ```bash
-# ヘルプを表示
-make help
-
-# 貸借チェック
-make check
-
-# 勘定科目の検証
-make validate
-
-# 年次ディレクトリの初期化（現在の年）
-make init-year
-
-# 年次ディレクトリの初期化（年を指定）
-make init-year YEAR=2027
-
-# 月次集計（月を指定）
-make monthly MONTH=2026-01
-
-# 年次集計
-make yearly
-
-# CSV エクスポート
-make export
-
-# hledger を直接実行
-make ledger ARGS="-f ledger/accounts.ledger balance"
-
-# コンテナ内のシェルに入る
-make shell
+./lgr help            # ヘルプを表示
+./lgr check           # 貸借チェック
+./lgr validate        # 勘定科目の検証
+./lgr init-year       # 年次ディレクトリの初期化（現在の年）
+./lgr init-year 2027  # 年次ディレクトリの初期化（年を指定）
+./lgr monthly 2026-01 # 月次集計（月を指定）
+./lgr yearly          # 年次集計
+./lgr export          # CSV エクスポート
+./lgr shell           # コンテナ内のシェルに入る
 ```
 
-### Windows (PowerShell) の場合
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください（例: `lgr check`）。
 
-`ledger.ps1` スクリプトを使用します：
-
-```powershell
-# ヘルプを表示
-.\ledger.ps1 help
-
-# 貸借チェック
-.\ledger.ps1 check
-
-# 勘定科目の検証
-.\ledger.ps1 validate
-
-# 年次ディレクトリの初期化（現在の年）
-.\ledger.ps1 init-year
-
-# 年次ディレクトリの初期化（年を指定）
-.\ledger.ps1 init-year 2027
-
-# 月次集計（月を指定）
-.\ledger.ps1 monthly 2026-01
-
-# 年次集計
-.\ledger.ps1 yearly
-
-# CSV エクスポート
-.\ledger.ps1 export
-
-# hledger を直接実行
-.\ledger.ps1 ledger -f ledger/accounts.ledger balance
-
-# コンテナ内のシェルに入る
-.\ledger.ps1 shell
-```
+**補足：** 旧コマンド `ledger.ps1` (Windows) も引き続き使用可能です。
 
 ## 基本的な操作
 
@@ -103,24 +49,12 @@ account Expenses:Books
 
 年度が変わったら、まず年次ディレクトリと12ヶ月分のファイルを一括作成します。
 
-**Mac / Linux / WSL / Git Bash：**
-
 ```bash
 # 現在の年度のディレクトリを作成
-make init-year
+./lgr init-year
 
 # 特定の年度を指定
-make init-year YEAR=2027
-```
-
-**Windows (PowerShell)：**
-
-```powershell
-# 現在の年度のディレクトリを作成
-.\ledger.ps1 init-year
-
-# 特定の年度を指定
-.\ledger.ps1 init-year 2027
+./lgr init-year 2027
 ```
 
 このコマンドで以下が自動的に作成されます：
@@ -154,46 +88,35 @@ make init-year YEAR=2027
 
 #### ショートカットコマンドを使用（推奨）
 
-**Mac / Linux / WSL / Git Bash：**
-
 ```bash
-make monthly MONTH=2026-01  # 月次集計
-make yearly                 # 年次集計
-make check                  # 貸借チェック
-make validate               # 勘定科目の検証
-```
-
-**Windows (PowerShell)：**
-
-```powershell
-.\ledger.ps1 monthly 2026-01  # 月次集計
-.\ledger.ps1 yearly           # 年次集計
-.\ledger.ps1 check            # 貸借チェック
-.\ledger.ps1 validate         # 勘定科目の検証
+./lgr monthly 2026-01 # 月次集計
+./lgr yearly          # 年次集計
+./lgr check           # 貸借チェック
+./lgr validate        # 勘定科目の検証
 ```
 
 ### 5. 残高の確認
 
-特定の勘定科目の残高を確認する：
+特定の勘定科目の残高を確認する（直接 Docker コマンド使用）：
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-make ledger ARGS="balance Assets:Cash"
+docker compose run --rm ledger hledger balance Assets:Cash
 
 # Windows (PowerShell)
-.\ledger.ps1 ledger balance Assets:Cash
+docker compose run --rm ledger hledger balance Assets:Cash
 ```
 
 ### 6. 出納帳の表示
 
-特定の勘定科目の取引履歴を表示：
+特定の勘定科目の取引履歴を表示（直接 Docker コマンド使用）：
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-make ledger ARGS="register Assets:Bank:Business"
+docker compose run --rm ledger hledger register Assets:Bank:Business
 
 # Windows (PowerShell)
-.\ledger.ps1 ledger register Assets:Bank:Business
+docker compose run --rm ledger hledger register Assets:Bank:Business
 ```
 
 ## 直接 Docker コマンドを実行する場合
@@ -259,13 +182,13 @@ ledger -f ledger/accounts.ledger -f ledger/2026/01.ledger register
 # 1. 取引を記帳（エディタで ledger/2026/01.ledger を編集）
 
 # 2. 勘定科目の検証
-make validate
+./lgr validate
 
 # 3. 貸借チェック
-make check
+./lgr check
 
 # 4. 月次集計の確認
-make monthly MONTH=2026-01
+./lgr monthly 2026-01
 
 # 5. Git にコミット
 git add ledger/2026/01.ledger
@@ -277,22 +200,23 @@ git push
 
 ```bash
 # 1. 年間の集計を確認
-make yearly
+./lgr yearly
 
 # 2. 決算処理（closing.ledger の編集）
 
 # 3. 翌年度の期首残高設定（opening_balance.ledger の編集）
 
 # 4. 確定申告の準備
-make export  # CSV エクスポート
+./lgr export
 ```
 
 ## トラブルシューティング
 
 ### コマンドが見つからない
 
-**make コマンドが使えない場合（Windows）：**
-- PowerShell スクリプト `ledger.ps1` を使用してください
+**ショートカットスクリプトが使えない場合：**
+- Mac/Linux/WSL/Git Bash: `./lgr` スクリプトを使用
+- Windows: `lgr.bat` を使用
 - または直接 Docker コマンドを実行してください
 
 **Docker が起動していない場合：**

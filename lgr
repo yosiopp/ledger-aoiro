@@ -1,0 +1,123 @@
+#!/bin/sh
+# ledger-aoiro コマンドラインツール（POSIX Shell）
+# Usage: ./lgr <command> [args...]
+
+set -e  # エラーで即座に終了
+
+# ヘルプメッセージ
+show_help() {
+  cat <<'HELP'
+ledger-aoiro コマンド一覧
+
+基本コマンド:
+  ./lgr check              貸借一致チェックを実行
+  ./lgr validate           勘定科目の定義チェック
+  ./lgr init-year [YEAR]   年次ディレクトリと12ヶ月分のファイルを作成
+  ./lgr monthly <MONTH>    月次集計（例: 2026-01）
+  ./lgr yearly             年次集計を実行
+  ./lgr export             CSV形式でエクスポート
+
+仕訳入力コマンド:
+  ./lgr add <MONTH>        対話的に仕訳を追加（例: 2026-01）
+  ./lgr web                ブラウザで帳簿を閲覧（http://localhost:5000）
+
+開発用コマンド:
+  ./lgr shell              Dockerコンテナ内のシェルに入る
+  ./lgr build              Dockerイメージをビルド
+  ./lgr help               このヘルプを表示
+
+使用例:
+  ./lgr init-year 2027
+  ./lgr monthly 2026-01
+  ./lgr add 2026-01
+HELP
+}
+
+# Docker Compose コマンドのラッパー
+run_ledger() {
+  docker compose run --rm ledger "$@"
+}
+
+# メインロジック
+case "${1:-}" in
+  check)
+    run_ledger node scripts/check-balance.mjs
+    ;;
+
+  validate)
+    run_ledger node scripts/validate-accounts.mjs
+    ;;
+
+  init-year)
+    if [ -n "${2:-}" ]; then
+      run_ledger node scripts/init-year.mjs --year="$2"
+    else
+      run_ledger node scripts/init-year.mjs
+    fi
+    ;;
+
+  monthly)
+    if [ -z "${2:-}" ]; then
+      echo "エラー: 月を指定してください（例: 2026-01）" >&2
+      echo "使用例: ./lgr monthly 2026-01" >&2
+      exit 1
+    fi
+    run_ledger node scripts/monthly-summary.mjs --month "$2"
+    ;;
+
+  yearly)
+    run_ledger node scripts/yearly-summary.mjs
+    ;;
+
+  export)
+    run_ledger node scripts/export-csv.mjs
+    ;;
+
+  add)
+    if [ -z "${2:-}" ]; then
+      echo "エラー: 月を指定してください（例: 2026-01）" >&2
+      echo "使用例: ./lgr add 2026-01" >&2
+      exit 1
+    fi
+    echo "📝 仕訳を追加: $2"
+    echo "💡 Ctrl+D または Ctrl+C で終了します"
+    echo ""
+
+    # YYYY-MM を YYYY と MM に分割
+    year=$(echo "$2" | cut -d'-' -f1)
+    month=$(echo "$2" | cut -d'-' -f2)
+
+    run_ledger hledger add \
+      -f ledger/accounts.ledger \
+      -f "ledger/$year/$month.ledger"
+    ;;
+
+  web)
+    echo "🌐 hledger-web を起動中..."
+    echo "📖 ブラウザで http://localhost:5000 を開いてください"
+    echo "💡 Ctrl+C で終了します"
+    echo ""
+    docker compose run --rm --service-ports ledger \
+      hledger-web -f ledger/accounts.ledger \
+      --serve --host=0.0.0.0 --port=5000
+    ;;
+
+  shell)
+    run_ledger sh
+    ;;
+
+  build)
+    docker compose build
+    ;;
+
+  help|--help|-h|"")
+    show_help
+    ;;
+
+  *)
+    echo "エラー: 不明なコマンド '$1'" >&2
+    echo "" >&2
+    show_help >&2
+    exit 1
+    ;;
+esac

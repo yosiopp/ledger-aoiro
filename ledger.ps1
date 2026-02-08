@@ -1,5 +1,5 @@
 # PowerShell script for ledger-aoiro (Windows用)
-# 使い方: .\ledger.ps1 <command> [options]
+# 使い方: lgr <command> [options]
 
 param(
     [Parameter(Position=0)]
@@ -75,7 +75,7 @@ switch ($Command.ToLower()) {
     "monthly" {
         if ($Args.Count -eq 0) {
             Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 monthly 2026-01"
+            Write-Host "使用例: lgr monthly 2026-01"
             exit 1
         }
         $month = $Args[0]
@@ -95,7 +95,7 @@ switch ($Command.ToLower()) {
     "add" {
         if ($Args.Count -eq 0) {
             Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 add 2026-01"
+            Write-Host "使用例: lgr add 2026-01"
             exit 1
         }
         $month = $Args[0]
@@ -144,7 +144,7 @@ switch ($Command.ToLower()) {
             # 月指定なし - 現在の年の全ファイルを読み込み、現在の月に追加
             Write-Host "🌐 hledger-web を起動中（追加先: ledger/$currentYear/$currentMonth.ledger）..." -ForegroundColor Green
             Write-Host "📖 ${currentYear}年の全ての月を表示します" -ForegroundColor Cyan
-            Write-Host "📝 閲覧専用にするには: .\ledger.ps1 web --view" -ForegroundColor Yellow
+            Write-Host "📝 閲覧専用にするには: lgr web --view" -ForegroundColor Yellow
             Write-Host "💡 Ctrl+C で終了します" -ForegroundColor Yellow
             Write-Host ""
 
@@ -168,8 +168,8 @@ switch ($Command.ToLower()) {
         $ledgerArgs = $Args -join " "
         if ($ledgerArgs -eq "") {
             Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 exec balance A:現金"
-            Write-Host "使用例: .\ledger.ps1 exec -f ledger/accounts.ledger balance"
+            Write-Host "使用例: lgr exec balance A:現金"
+            Write-Host "使用例: lgr exec -f ledger/accounts.ledger balance"
             exit 1
         } else {
             Invoke-DockerCompose "hledger $ledgerArgs"
@@ -180,7 +180,7 @@ switch ($Command.ToLower()) {
         $ledgerArgs = $Args -join " "
         if ($ledgerArgs -eq "") {
             Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 exec balance A:現金"
+            Write-Host "使用例: lgr exec balance A:現金"
             Write-Host "ヒント: 'ledger' コマンドは非推奨です。代わりに 'exec' を使用してください。"
             exit 1
         } else {

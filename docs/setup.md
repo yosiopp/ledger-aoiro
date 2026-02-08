@@ -95,9 +95,9 @@ account Expenses:Books
 ; 期首残高
 
 2026/01/01 * 期首残高
-    Assets:Cash                     50000 JPY
-    Assets:Bank:Business           500000 JPY
-    Equity:OpeningBalances
+    Assets:現金                     50000 JPY
+    Assets:銀行:事業用           500000 JPY
+    Equity:期首残高
 ```
 
 ### 4.3 package.jsonのカスタマイズ（任意）
@@ -129,12 +129,12 @@ cat > ledger/2026/01.ledger << 'EOF'
 ; 2026年1月の取引
 
 2026/01/05 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Cash
+    Expenses:消耗品費           3000 JPY
+    Assets:現金
 
 2026/01/10 * 売上入金
-    Assets:Bank:Business       50000 JPY
-    Income:Sales
+    Assets:銀行:事業用       50000 JPY
+    Income:売上
 EOF
 
 # 残高確認

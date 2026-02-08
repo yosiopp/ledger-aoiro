@@ -70,16 +70,16 @@ account Expenses:Books
 
 ```ledger
 2026/01/15 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Bank:Business
+    Expenses:消耗品費           3000 JPY
+    Assets:銀行:事業用
 
 2026/01/20 * クライアントA 売上
-    Assets:Bank:Business       100000 JPY
-    Income:Sales
+    Assets:銀行:事業用       100000 JPY
+    Income:売上
 
 2026/01/25 * 自宅兼事務所の電気代（按分50%）
-    Expenses:Utilities          5000 JPY
-    Assets:Bank:Business
+    Expenses:水道光熱費          5000 JPY
+    Assets:銀行:事業用
 ```
 
 詳しい記帳方法は [workflow.md](workflow.md) を参照してください。
@@ -101,10 +101,10 @@ account Expenses:Books
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger balance Assets:Cash
+docker compose run --rm ledger hledger balance Assets:現金
 
 # Windows (PowerShell)
-docker compose run --rm ledger hledger balance Assets:Cash
+docker compose run --rm ledger hledger balance Assets:現金
 ```
 
 ### 6. 出納帳の表示
@@ -113,10 +113,10 @@ docker compose run --rm ledger hledger balance Assets:Cash
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger register Assets:Bank:Business
+docker compose run --rm ledger hledger register Assets:銀行:事業用
 
 # Windows (PowerShell)
-docker compose run --rm ledger hledger register Assets:Bank:Business
+docker compose run --rm ledger hledger register Assets:銀行:事業用
 ```
 
 ## 直接 Docker コマンドを実行する場合
@@ -153,7 +153,7 @@ docker compose run --rm ledger ledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
-  register Assets:Bank:Business
+  register Assets:銀行:事業用
 
 # 複数ファイルを読み込んで残高表示
 docker compose run --rm ledger ledger \

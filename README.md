@@ -111,8 +111,8 @@ docker compose run --rm ledger hledger --version
 ```ledger
 # ledger/2026/01.ledger
 2026/01/15 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Bank:Business
+    Expenses:消耗品費           3000 JPY
+    Assets:銀行:事業用
 ```
 
 ### 6. 集計を実行

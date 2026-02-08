@@ -19,9 +19,9 @@ include ../accounts.ledger
 
 ; 開業時の初期資本（現金・銀行口座への入金）
 ; YYYY/01/01 * 開業資本金
-;     Assets:Cash                  100,000 JPY
-;     Assets:Bank:Business         500,000 JPY
-;     Equity:OpeningBalances
+;     Assets:現金                  100,000 JPY
+;     Assets:銀行:事業用         500,000 JPY
+;     Equity:期首残高
 
 
 ; ------------------------------------------------------------
@@ -32,18 +32,18 @@ include ../accounts.ledger
 ; ※ 以下は例です。実際の金額は前年度のclosing.ledgerと一致させる
 
 ; YYYY/01/01 * 期首残高（資産）
-;     Assets:Cash                   50,000 JPY
-;     Assets:Bank:Business         800,000 JPY
-;     Assets:Equipment           1,200,000 JPY
-;     Equity:OpeningBalances
+;     Assets:現金                   50,000 JPY
+;     Assets:銀行:事業用         800,000 JPY
+;     Assets:備品           1,200,000 JPY
+;     Equity:期首残高
 
 ; YYYY/01/01 * 期首残高（負債）
-;     Equity:OpeningBalances      -200,000 JPY
-;     Liabilities:CreditCard
+;     Equity:期首残高      -200,000 JPY
+;     Liabilities:クレジットカード
 
 ; YYYY/01/01 * 前年度繰越利益
-;     Equity:OpeningBalances       500,000 JPY
-;     Equity:RetainedEarnings
+;     Equity:期首残高       500,000 JPY
+;     Equity:繰越利益
 
 
 ; ------------------------------------------------------------

@@ -29,8 +29,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```ledger
 ; ledger/2026/01.ledger（会計の事実）
 2026/01/15 * 自宅兼事務所の電気代
-    Expenses:Utilities              5000 JPY  ; 事業按分50%
-    Assets:Bank:Business
+    Expenses:水道光熱費              5000 JPY  ; 事業按分50%
+    Assets:銀行:事業用
 ```
 
 ```
@@ -126,12 +126,12 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 
 1. 利益を繰越利益に振替：
    ```
-   利益 → Equity:RetainedEarnings
+   利益 → Equity:繰越利益
    ```
 
 2. 残高を期首残高に振替：
    ```
-   残高 → Equity:OpeningBalances
+   残高 → Equity:期首残高
    ```
 
 旧年度の仕訳は `ledger/YYYY/closing.ledger` に、新年度の仕訳は `ledger/YYYY/opening.ledger` に記載します（例：2026年度なら `ledger/2026/closing.ledger` と `ledger/2027/opening.ledger`）。
@@ -152,7 +152,7 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 hledger -f ledger/accounts.ledger balance
 
 # 特定勘定科目の出納帳
-hledger -f ledger/accounts.ledger register Assets:Bank
+hledger -f ledger/accounts.ledger register Assets:銀行
 
 # 複数ファイルの読み込み
 hledger -f ledger/accounts.ledger -f ledger/2026-01.ledger balance

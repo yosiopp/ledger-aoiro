@@ -61,14 +61,14 @@ ledger-aoiro/
 
 ```ledger
 ; 資産
-account Assets:Cash
+account Assets:現金
     note 手元現金
 
-account Assets:Bank:Business
+account Assets:銀行:事業用
     note 事業用銀行口座
 
 ; 費用
-account Expenses:Supplies
+account Expenses:消耗品費
     note 消耗品費
 ```
 
@@ -81,9 +81,9 @@ account Expenses:Supplies
 ```ledger
 ; ledger/2026/opening.ledger
 2026/01/01 * 期首残高
-    Assets:Cash                     50000 JPY
-    Assets:Bank:Business           500000 JPY
-    Equity:OpeningBalances
+    Assets:現金                     50000 JPY
+    Assets:銀行:事業用           500000 JPY
+    Equity:期首残高
 ```
 
 年度が変わったら、前年度の closing.ledger で確定した残高をここに記載します。
@@ -95,10 +95,10 @@ account Expenses:Supplies
 ```ledger
 ; ledger/2026/closing.ledger
 2026/12/31 * 決算整理：損益の確定
-    Income:Sales               -1200000 JPY  ; 売上の相殺
-    Expenses:Supplies            150000 JPY  ; 経費の相殺
+    Income:売上               -1200000 JPY  ; 売上の相殺
+    Expenses:消耗品費            150000 JPY  ; 経費の相殺
     ; ...
-    Equity:RetainedEarnings              JPY  ; 差額が利益
+    Equity:繰越利益              JPY  ; 差額が利益
 ```
 
 #### YYYY/ - 年別ディレクトリ
@@ -117,12 +117,12 @@ account Expenses:Supplies
 ; 2026年1月の取引
 
 2026/01/05 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Cash
+    Expenses:消耗品費           3000 JPY
+    Assets:現金
 
 2026/01/10 * クライアントA 売上
-    Assets:Bank:Business       100000 JPY
-    Income:Sales
+    Assets:銀行:事業用       100000 JPY
+    Income:売上
 ```
 
 ### memo/ - 判断の理由や根拠（任意）

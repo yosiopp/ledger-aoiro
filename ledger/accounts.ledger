@@ -20,21 +20,21 @@
 account Assets
 
 ; 手元現金
-account Assets:Cash
+account Assets:現金
 
 ; 銀行口座（事業用）
-account Assets:Bank
-account Assets:Bank:Business
+account Assets:銀行
+account Assets:銀行:事業用
 
 ; 売掛金（未回収の売上）
-account Assets:AccountsReceivable
+account Assets:売掛金
 
 ; 前払費用（年払い保険、サーバー代など）
-account Assets:PrepaidExpenses
+account Assets:前払費用
 
 ; 備品・固定資産（減価償却対象）
 ; ※ 10万円以上のものを想定
-account Assets:Equipment
+account Assets:備品
 
 
 ; ------------------------------------------------------------
@@ -44,13 +44,13 @@ account Assets:Equipment
 account Liabilities
 
 ; 買掛金（未払の経費）
-account Liabilities:AccountsPayable
+account Liabilities:買掛金
 
 ; クレジットカード未払
-account Liabilities:CreditCard
+account Liabilities:クレジットカード
 
 ; 借入金（金融機関・個人）
-account Liabilities:Loans
+account Liabilities:借入金
 
 
 ; ------------------------------------------------------------
@@ -61,19 +61,19 @@ account Equity
 
 ; 期首残高
 ; 開業時・年度切替時に使用
-account Equity:OpeningBalances
+account Equity:期首残高
 
 ; 事業主資本
-account Equity:Owner
+account Equity:事業主
 
 ; 事業主が事業に入れたお金・資産
-account Equity:Owner:Contributions
+account Equity:事業主:資本金
 
 ; 事業のお金を個人で使った場合
-account Equity:Owner:Drawings
+account Equity:事業主:引出
 
 ; 前年度からの繰越利益
-account Equity:RetainedEarnings
+account Equity:繰越利益
 
 
 ; ------------------------------------------------------------
@@ -83,10 +83,10 @@ account Equity:RetainedEarnings
 account Income
 
 ; 主たる売上
-account Income:Sales
+account Income:売上
 
 ; 雑収入（キャンセル料、利息など）
-account Income:Other
+account Income:雑収入
 
 
 ; ------------------------------------------------------------
@@ -96,32 +96,32 @@ account Income:Other
 account Expenses
 
 ; 広告宣伝費
-account Expenses:Advertising
+account Expenses:広告宣伝費
 
 ; 消耗品費（10万円未満の備品含む）
-account Expenses:Supplies
+account Expenses:消耗品費
 
 ; 通信費（携帯・ネット・サーバー代）
-account Expenses:Communication
+account Expenses:通信費
 
 ; 水道光熱費
-account Expenses:Utilities
+account Expenses:水道光熱費
 
 ; 地代家賃（事務所・自宅按分）
-account Expenses:Rent
+account Expenses:地代家賃
 
 ; 旅費交通費
-account Expenses:Travel
+account Expenses:旅費交通費
 
 ; 会議費・交際費
-account Expenses:Meals
+account Expenses:会議費交際費
 
 ; 外注費
-account Expenses:Outsourcing
+account Expenses:外注費
 
 ; 租税公課（事業税・印紙税など）
 ; ※ 所得税・住民税は含めない
-account Expenses:Taxes
+account Expenses:租税公課
 
 ; 減価償却費
-account Expenses:Depreciation
+account Expenses:減価償却費

@@ -89,7 +89,8 @@ docker compose run --rm ledger hledger --version
 ./lgr init-year 2027
 ```
 
-> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 これで `ledger/YYYY/` ディレクトリと `01.ledger` から `12.ledger` までの12個の月次ファイルが自動作成されます。
 
@@ -124,7 +125,8 @@ AI が対話形式で取引内容を聞き取り、自動的に適切な勘定�
     A:銀行:事業用
 ```
 
-> **Note**: このプロジェクトでは、勘定科目の大分類にhledgerのタイプコードと一致する**大文字1文字**（A, L, E, R, X）を使用しています。詳しくは [勘定科目ガイド](docs/accounts.md) を参照してください。
+> [!NOTE]
+> このプロジェクトでは、勘定科目の大分類にhledgerのタイプコードと一致する**大文字1文字**（A, L, E, R, X）を使用しています。詳しくは [勘定科目ガイド](docs/accounts.md) を参照してください。
 
 ### 6. 集計を実行
 

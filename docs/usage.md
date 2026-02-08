@@ -20,7 +20,8 @@ Docker コマンドを毎回入力するのは手間なので、統一コマン�
 ./lgr shell           # コンテナ内のシェルに入る
 ```
 
-> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください（例: `lgr check`）。
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください（例: `lgr check`）。
 
 **補足：** 旧コマンド `ledger.ps1` (Windows) も引き続き使用可能です。
 

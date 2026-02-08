@@ -28,7 +28,8 @@
 ./lgr init-year 2027
 ```
 
-> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 このコマンドで以下が自動的に作成されます：
 

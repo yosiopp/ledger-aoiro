@@ -224,7 +224,8 @@ hledger をインストールした Docker イメージの定義ファイル。
 ./lgr monthly 2026-01 # 月次集計
 ```
 
-> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 ### ledger.ps1
 

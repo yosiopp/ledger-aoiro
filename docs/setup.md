@@ -66,8 +66,11 @@ git push -u origin main
 docker compose build
 
 # 動作確認（ヘルプが表示されればOK）
-docker compose run --rm ledger ledger --version
+./lgr help
 ```
+
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr help` と実行してください。
 
 ## 4. 初期設定
 
@@ -121,11 +124,13 @@ account X:Books
 ### 簡単な取引を記録してテスト
 
 ```bash
-# 年別ディレクトリを作成
-mkdir -p ledger/2026
+# 年別ディレクトリと月次ファイルを作成
+./lgr init-year 2026
+```
 
-# 2026年1月の取引ファイルを作成
-cat > ledger/2026/01.ledger << 'EOF'
+作成された `ledger/2026/01.ledger` を編集して、テスト用の取引を記録します：
+
+```ledger
 ; 2026年1月の取引
 
 2026/01/05 * 事務用品購入
@@ -135,27 +140,29 @@ cat > ledger/2026/01.ledger << 'EOF'
 2026/01/10 * 売上入金
     A:銀行:事業用       50000 JPY
     R:売上
-EOF
+```
 
-# 残高確認
-docker compose run --rm ledger ledger \
-  -f ledger/accounts.ledger \
-  -f ledger/opening_balance.ledger \
-  -f ledger/2026/01.ledger \
-  balance
+動作確認コマンドを実行：
 
+```bash
 # 貸借チェック（バランスが取れているか確認）
-docker compose run --rm ledger npm run check
+./lgr check
+
+# 月次集計を確認
+./lgr monthly 2026-01
+
+# ブラウザで帳簿を閲覧（オプション）
+./lgr web
 ```
 
 ## 6. 日常的な運用を開始
 
 これで準備完了です！以下のワークフローで日々の記帳を進めていきます：
 
-1. **年別ディレクトリの作成** - `mkdir -p ledger/YYYY`
-2. **月次ファイルの作成** - `ledger/YYYY/MM.ledger` を作成
-3. **取引の記録** - 日々の取引を記帳
-4. **検証** - `npm run check` で貸借が一致しているか確認
+1. **年別ディレクトリの作成** - `./lgr init-year YYYY`
+2. **取引の記録** - 日々の取引を `ledger/YYYY/MM.ledger` に記帳
+3. **検証** - `./lgr check` で貸借が一致しているか確認
+4. **月次集計** - `./lgr monthly YYYY-MM` で月次確認
 5. **コミット＆プッシュ** - 変更をGitで管理
 
 詳しくは [workflow.md](workflow.md) を参照してください。
@@ -208,8 +215,8 @@ docker compose build --no-cache
 未定義の勘定科目を使っている可能性があります。
 
 ```bash
-# 勘定科目の検証スクリプトを実行（実装後）
-docker compose run --rm ledger node scripts/validate-accounts.mjs
+# 勘定科目の検証スクリプトを実行
+./lgr validate
 ```
 
 エラーメッセージで指摘された勘定科目を `ledger/accounts.ledger` に追加してください。

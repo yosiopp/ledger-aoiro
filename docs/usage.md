@@ -97,74 +97,76 @@ account X:Books
 ./lgr validate        # 勘定科目の検証
 ```
 
-### 5. 残高の確認
+### 5. 帳簿の閲覧
 
-特定の勘定科目の残高を確認する（直接 Docker コマンド使用）：
-
-```bash
-# Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger balance A:現金
-
-# Windows (PowerShell)
-docker compose run --rm ledger hledger balance A:現金
-```
-
-### 6. 出納帳の表示
-
-特定の勘定科目の取引履歴を表示（直接 Docker コマンド使用）：
+ブラウザで帳簿を閲覧・確認できます：
 
 ```bash
-# Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger register A:銀行:事業用
-
-# Windows (PowerShell)
-docker compose run --rm ledger hledger register A:銀行:事業用
+./lgr web
 ```
 
-## 直接 Docker コマンドを実行する場合
+ブラウザで http://localhost:5000 が開き、残高や取引履歴を視覚的に確認できます。
 
-ショートカットを使わず、直接 Docker Compose コマンドを実行することもできます。
 
-### 基本的なコマンド
+## 直接 Docker コマンドを実行する場合（高度な使い方）
+
+基本的な操作には `lgr` コマンドの使用を推奨しますが、直接 Docker Compose コマンドを実行することもできます。
+
+### 基本的なコマンド（lgr 推奨）
+
+以下の操作は `lgr` コマンドで実行することを推奨します：
 
 ```bash
 # 貸借チェック
-docker compose run --rm ledger node scripts/check-balance.mjs
+./lgr check
+# または: docker compose run --rm ledger node scripts/check-balance.mjs
 
 # 勘定科目の検証
-docker compose run --rm ledger node scripts/validate-accounts.mjs
+./lgr validate
+# または: docker compose run --rm ledger node scripts/validate-accounts.mjs
 
 # 月次集計（月を指定）
-docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+./lgr monthly 2026-01
+# または: docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
 
 # 年次集計
-docker compose run --rm ledger node scripts/yearly-summary.mjs
+./lgr yearly
+# または: docker compose run --rm ledger node scripts/yearly-summary.mjs
 
 # CSV エクスポート
-docker compose run --rm ledger node scripts/export-csv.mjs
+./lgr export
+# または: docker compose run --rm ledger node scripts/export-csv.mjs
 ```
 
 ### hledger を直接実行
 
-```bash
-# 残高レポート
-docker compose run --rm ledger ledger -f ledger/accounts.ledger balance
+高度な分析やカスタムレポートが必要な場合は、hledger コマンドを直接実行できます。
 
-# 特定勘定科目の出納帳
-docker compose run --rm ledger ledger \
+```bash
+# 特定勘定科目の残高を確認
+docker compose run --rm ledger hledger balance A:現金
+
+# 特定勘定科目の出納帳（取引履歴）
+docker compose run --rm ledger hledger register A:銀行:事業用
+
+# 複数ファイルを指定して残高レポート
+docker compose run --rm ledger hledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
-  register A:銀行:事業用
+  balance
 
-# 複数ファイルを読み込んで残高表示
-docker compose run --rm ledger ledger \
+# 複数月をまとめて分析
+docker compose run --rm ledger hledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
   -f ledger/2026/02.ledger \
   balance
 ```
+
+> [!TIP]
+> 基本的な残高確認や取引履歴の閲覧には `./lgr web` を使用する方が便利です。ブラウザで視覚的に確認できます。
 
 ### コンテナ内のシェルに入る
 

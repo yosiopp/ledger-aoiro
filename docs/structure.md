@@ -207,8 +207,7 @@ hledger をラップして各種処理を実行するスクリプト群です。
 Docker Compose の設定ファイル。hledger を含む Docker コンテナを定義しています。
 
 ```bash
-# コンテナを使ってコマンドを実行
-docker compose run --rm ledger node scripts/check-balance.mjs
+./lgr check
 ```
 
 ### Dockerfile

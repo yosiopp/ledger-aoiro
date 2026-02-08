@@ -115,7 +115,7 @@ memo/2026/01/receipt-002.md  # 2026年1月の2件目
 
 ```bash
 # 貸借チェック
-docker compose run --rm ledger npm run check
+./lgr check
 ```
 
 エラーが出た場合は、記帳ミスがある可能性があります。
@@ -123,19 +123,8 @@ docker compose run --rm ledger npm run check
 ### 残高の確認
 
 ```bash
-# すべての勘定科目の残高を表示
-docker compose run --rm ledger ledger \
-  -f ledger/accounts.ledger \
-  -f ledger/opening_balance.ledger \
-  -f ledger/2026/01.ledger \
-  balance
-
-# 現金の残高のみ表示
-docker compose run --rm ledger ledger \
-  -f ledger/accounts.ledger \
-  -f ledger/opening_balance.ledger \
-  -f ledger/2026/01.ledger \
-  balance A:現金
+# ブラウザで帳簿を閲覧
+./lgr web
 ```
 
 実際の現金残高や銀行残高と照合してください。
@@ -174,7 +163,7 @@ git push
 
 ```bash
 # 1月の集計を表示
-docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
+./lgr monthly 2026-01
 ```
 
 ### 月末のチェックリスト
@@ -192,7 +181,7 @@ docker compose run --rm ledger node scripts/monthly-summary.mjs --month 2026-01
 
 ```bash
 # 年間の集計を表示
-docker compose run --rm ledger node scripts/yearly-summary.mjs
+./lgr yearly
 ```
 
 ### 決算処理（12月31日または期末）
@@ -420,7 +409,7 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 
 ```bash
 # 使用されている勘定科目をチェック
-docker compose run --rm ledger node scripts/validate-accounts.mjs
+./lgr validate
 ```
 
 エラーが出た勘定科目を `ledger/accounts.ledger` に追加します。

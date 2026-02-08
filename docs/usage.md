@@ -35,7 +35,7 @@ make yearly
 # CSV エクスポート
 make export
 
-# ledger CLI を直接実行
+# hledger を直接実行
 make ledger ARGS="-f ledger/accounts.ledger balance"
 
 # コンテナ内のシェルに入る
@@ -71,7 +71,7 @@ make shell
 # CSV エクスポート
 .\ledger.ps1 export
 
-# ledger CLI を直接実行
+# hledger を直接実行
 .\ledger.ps1 ledger -f ledger/accounts.ledger balance
 
 # コンテナ内のシェルに入る
@@ -219,7 +219,7 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 docker compose run --rm ledger node scripts/export-csv.mjs
 ```
 
-### ledger CLI を直接実行
+### hledger を直接実行
 
 ```bash
 # 残高レポート

@@ -224,5 +224,5 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 
 問題が発生した場合：
 
-1. [ledger CLI 公式ドキュメント](https://ledger-cli.org/doc/ledger3.html)
+1. [hledger 公式ドキュメント](https://hledger.org/)
 2. テンプレートの [Issues](https://github.com/yosiopp/ledger-aoiro/issues)

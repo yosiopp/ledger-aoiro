@@ -1,4 +1,4 @@
-// ledger CLI 操作の共通ユーティリティ
+// hledger 操作の共通ユーティリティ
 
 import { execSync } from 'child_process';
 import { readdirSync, readFileSync, existsSync } from 'fs';

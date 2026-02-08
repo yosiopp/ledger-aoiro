@@ -34,7 +34,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 
 ```
-# memo/2026-01/receipt-001.md（判断の理由）
+# memo/2026/01/receipt-001.md（判断の理由）
 - 按分比率50%の根拠：自宅総面積100㎡のうち事務所専用スペース50㎡
 - 参考：国税庁タックスアンサーNo.1805「家事関連費」
 ```

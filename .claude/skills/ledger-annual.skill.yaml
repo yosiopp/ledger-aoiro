@@ -1,0 +1,5 @@
+name: ledger-annual
+description: 年次集計と確定申告用レポートを生成します（青色申告決算書）
+version: 1.0.0
+invocation:
+  type: user

@@ -1,0 +1,5 @@
+name: ledger-monthly
+description: 指定月の月次チェックと集計レポートを生成します
+version: 1.0.0
+invocation:
+  type: user

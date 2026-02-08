@@ -1,0 +1,5 @@
+name: ledger-add
+description: hledger形式で新しい仕訳を入力・記帳します（日々の取引記録）
+version: 1.0.0
+invocation:
+  type: user

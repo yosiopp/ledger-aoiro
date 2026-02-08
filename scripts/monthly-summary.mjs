@@ -24,9 +24,9 @@ function monthlySummary(month) {
 
   try {
     // 収益
-    console.log('💰 収益 (Income)');
+    console.log('💰 収益 (Revenue)');
     console.log('─'.repeat(60));
-    const incomeCmd = `hledger ${fileArgs} balance Income --begin ${month}-01 --end ${endDate} --depth 2`;
+    const incomeCmd = `hledger ${fileArgs} balance R: --begin ${month}-01 --end ${endDate} --depth 2`;
     try {
       const income = execSync(incomeCmd, { encoding: 'utf-8' });
       console.log(income || '   (なし)');
@@ -37,7 +37,7 @@ function monthlySummary(month) {
     // 費用
     console.log('\n💸 費用 (Expenses)');
     console.log('─'.repeat(60));
-    const expensesCmd = `hledger ${fileArgs} balance Expenses --begin ${month}-01 --end ${endDate} --depth 2`;
+    const expensesCmd = `hledger ${fileArgs} balance X: --begin ${month}-01 --end ${endDate} --depth 2`;
     try {
       const expenses = execSync(expensesCmd, { encoding: 'utf-8' });
       console.log(expenses || '   (なし)');
@@ -48,7 +48,7 @@ function monthlySummary(month) {
     // 資産
     console.log('\n🏦 資産 (Assets)');
     console.log('─'.repeat(60));
-    const assetsCmd = `hledger ${fileArgs} balance Assets --depth 2`;
+    const assetsCmd = `hledger ${fileArgs} balance A: --depth 2`;
     try {
       const assets = execSync(assetsCmd, { encoding: 'utf-8' });
       console.log(assets || '   (なし)');
@@ -59,7 +59,7 @@ function monthlySummary(month) {
     // 負債
     console.log('\n💳 負債 (Liabilities)');
     console.log('─'.repeat(60));
-    const liabilitiesCmd = `hledger ${fileArgs} balance Liabilities --depth 2`;
+    const liabilitiesCmd = `hledger ${fileArgs} balance L: --depth 2`;
     try {
       const liabilities = execSync(liabilitiesCmd, { encoding: 'utf-8' });
       console.log(liabilities || '   (なし)');
@@ -70,7 +70,7 @@ function monthlySummary(month) {
     // 月次の損益
     console.log('\n📈 月次損益');
     console.log('─'.repeat(60));
-    const plCmd = `hledger ${fileArgs} balance Income Expenses --begin ${month}-01 --end ${endDate}`;
+    const plCmd = `hledger ${fileArgs} balance R: X: --begin ${month}-01 --end ${endDate}`;
     try {
       const pl = execSync(plCmd, { encoding: 'utf-8' });
       console.log(pl);

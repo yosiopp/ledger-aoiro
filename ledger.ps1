@@ -1,5 +1,5 @@
 # PowerShell script for ledger-aoiro (Windows用)
-# 使い方: .\ledger.ps1 <command> [options]
+# 使い方: lgr <command> [options]
 
 param(
     [Parameter(Position=0)]
@@ -13,33 +13,38 @@ function Show-Help {
     Write-Host "ledger-aoiro コマンド一覧" -ForegroundColor Green
     Write-Host ""
     Write-Host "基本コマンド:"
-    Write-Host "  .\ledger.ps1 check          - 貸借一致チェックを実行"
-    Write-Host "  .\ledger.ps1 validate       - 勘定科目の定義チェック"
-    Write-Host "  .\ledger.ps1 init-year [year] - 年次ディレクトリと12ヶ月分のファイルを作成"
-    Write-Host "  .\ledger.ps1 monthly 2026-01 - 月次集計を実行"
-    Write-Host "  .\ledger.ps1 yearly         - 年次集計を実行"
-    Write-Host "  .\ledger.ps1 export         - CSV形式でエクスポート"
+    Write-Host "  lgr check          - 貸借一致チェックを実行"
+    Write-Host "  lgr validate       - 勘定科目の定義チェック"
+    Write-Host "  lgr init-year [year] - 年次ディレクトリと12ヶ月分のファイルを作成"
+    Write-Host "  lgr monthly 2026-01 - 月次集計を実行"
+    Write-Host "  lgr yearly [year]  - 年次集計を実行（年指定なしは現在の年）"
+    Write-Host "  lgr export         - CSV形式でエクスポート"
     Write-Host ""
     Write-Host "仕訳入力コマンド:"
-    Write-Host "  .\ledger.ps1 add 2026-01    - 対話的に仕訳を追加"
-    Write-Host "  .\ledger.ps1 web [MONTH]    - ブラウザで帳簿を閲覧（http://localhost:5000）"
-    Write-Host "                                月指定: その月のファイルに追加"
-    Write-Host "                                月未指定: 現在の年の全月を表示、現在の月に追加"
-    Write-Host "  .\ledger.ps1 web --view     - 閲覧専用モード（追加不可）"
+    Write-Host "  lgr add 2026-01    - 対話的に仕訳を追加"
+    Write-Host "  lgr web [MONTH]    - ブラウザで帳簿を閲覧（http://localhost:5000）"
+    Write-Host "                       月指定: その月のファイルに追加"
+    Write-Host "                       月未指定: 現在の年の全月を表示、現在の月に追加"
+    Write-Host "  lgr web --view     - 閲覧専用モード（追加不可）"
+    Write-Host ""
+    Write-Host "高度な使い方:"
+    Write-Host "  lgr exec [args]    - hledger コマンドを直接実行"
+    Write-Host "                       例: lgr exec balance A:現金"
+    Write-Host "                       例: lgr exec -f ledger/accounts.ledger balance"
     Write-Host ""
     Write-Host "開発用コマンド:"
-    Write-Host "  .\ledger.ps1 ledger [args]  - hledger を直接実行"
-    Write-Host "  .\ledger.ps1 shell          - Dockerコンテナ内のシェルに入る"
-    Write-Host "  .\ledger.ps1 build          - Dockerイメージをビルド"
+    Write-Host "  lgr shell          - Dockerコンテナ内のシェルに入る"
+    Write-Host "  lgr build          - Dockerイメージをビルド"
     Write-Host ""
     Write-Host "使用例:"
-    Write-Host "  .\ledger.ps1 init-year 2027"
-    Write-Host "  .\ledger.ps1 monthly 2026-01"
-    Write-Host "  .\ledger.ps1 add 2026-01"
-    Write-Host "  .\ledger.ps1 web 2026-01"
-    Write-Host "  .\ledger.ps1 web"
-    Write-Host "  .\ledger.ps1 web --view"
-    Write-Host "  .\ledger.ps1 ledger -f ledger/accounts.ledger balance"
+    Write-Host "  lgr init-year 2027"
+    Write-Host "  lgr monthly 2026-01"
+    Write-Host "  lgr yearly 2026"
+    Write-Host "  lgr add 2026-01"
+    Write-Host "  lgr web 2026-01"
+    Write-Host "  lgr web"
+    Write-Host "  lgr web --view"
+    Write-Host "  lgr exec -f ledger/accounts.ledger balance"
 }
 
 function Invoke-DockerCompose {
@@ -70,14 +75,19 @@ switch ($Command.ToLower()) {
     "monthly" {
         if ($Args.Count -eq 0) {
             Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 monthly 2026-01"
+            Write-Host "使用例: lgr monthly 2026-01"
             exit 1
         }
         $month = $Args[0]
         Invoke-DockerCompose "node scripts/monthly-summary.mjs --month $month"
     }
     "yearly" {
-        Invoke-DockerCompose "node scripts/yearly-summary.mjs"
+        if ($Args.Count -eq 0) {
+            Invoke-DockerCompose "node scripts/yearly-summary.mjs"
+        } else {
+            $year = $Args[0]
+            Invoke-DockerCompose "node scripts/yearly-summary.mjs --year $year"
+        }
     }
     "export" {
         Invoke-DockerCompose "node scripts/export-csv.mjs"
@@ -85,7 +95,7 @@ switch ($Command.ToLower()) {
     "add" {
         if ($Args.Count -eq 0) {
             Write-Host "エラー: 月を指定してください（例: 2026-01）" -ForegroundColor Red
-            Write-Host "使用例: .\ledger.ps1 add 2026-01"
+            Write-Host "使用例: lgr add 2026-01"
             exit 1
         }
         $month = $Args[0]
@@ -134,7 +144,7 @@ switch ($Command.ToLower()) {
             # 月指定なし - 現在の年の全ファイルを読み込み、現在の月に追加
             Write-Host "🌐 hledger-web を起動中（追加先: ledger/$currentYear/$currentMonth.ledger）..." -ForegroundColor Green
             Write-Host "📖 ${currentYear}年の全ての月を表示します" -ForegroundColor Cyan
-            Write-Host "📝 閲覧専用にするには: .\ledger.ps1 web --view" -ForegroundColor Yellow
+            Write-Host "📝 閲覧専用にするには: lgr web --view" -ForegroundColor Yellow
             Write-Host "💡 Ctrl+C で終了します" -ForegroundColor Yellow
             Write-Host ""
 
@@ -154,11 +164,27 @@ switch ($Command.ToLower()) {
             docker compose run --rm --service-ports ledger hledger-web $files --serve --host=0.0.0.0 --port=5000
         }
     }
-    "ledger" {
+    "exec" {
         $ledgerArgs = $Args -join " "
         if ($ledgerArgs -eq "") {
-            Invoke-DockerCompose "hledger --version"
+            Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
+            Write-Host "使用例: lgr exec balance A:現金"
+            Write-Host "使用例: lgr exec -f ledger/accounts.ledger balance"
+            exit 1
         } else {
+            Invoke-DockerCompose "hledger $ledgerArgs"
+        }
+    }
+    "ledger" {
+        # 互換性のために残す（exec へのエイリアス）
+        $ledgerArgs = $Args -join " "
+        if ($ledgerArgs -eq "") {
+            Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
+            Write-Host "使用例: lgr exec balance A:現金"
+            Write-Host "ヒント: 'ledger' コマンドは非推奨です。代わりに 'exec' を使用してください。"
+            exit 1
+        } else {
+            Write-Host "ヒント: 'ledger' コマンドは非推奨です。代わりに 'exec' を使用してください。" -ForegroundColor Yellow
             Invoke-DockerCompose "hledger $ledgerArgs"
         }
     }

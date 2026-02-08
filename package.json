@@ -1,7 +1,7 @@
 {
   "name": "ledger-aoiro",
   "version": "1.0.0",
-  "description": "[ledger](https://github.com/ledger/ledger) を使って青色申告するためのテンプレート",
+  "description": "[hledger](https://hledger.org/) を使って青色申告するためのテンプレート",
   "homepage": "https://github.com/yosiopp/ledger-aoiro#readme",
   "bugs": {
     "url": "https://github.com/yosiopp/ledger-aoiro/issues"

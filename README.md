@@ -39,6 +39,17 @@
 
 この分離により、将来の税務調査や自分自身の振り返りで「なぜこう判断したのか」を説明できます。
 
+## 前提条件
+
+このテンプレートを使用するには、以下の環境が必要です：
+
+- **Docker と Docker Compose**：hledger をコンテナ環境で実行するため必須
+- **Git**：帳簿データのバージョン管理に使用
+- **VSCode（推奨）**：Claude Code 拡張機能を使用する場合
+
+> [!IMPORTANT]
+> **Docker Compose** が使える環境が最低動作要件です。Docker Desktop（macOS/Windows）または Docker Engine + Docker Compose（Linux）をインストールしてください。
+
 ## クイックスタート
 
 ### 1. テンプレートの取得

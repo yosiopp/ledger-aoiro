@@ -97,6 +97,11 @@ describe("yourFunction", () => {
 2. 動作確認（Docker 環境で実行）
 
    ```bash
+   # lgr コマンドで実行（推奨）
+   ./lgr check
+   ./lgr monthly 2026-01
+
+   # または Docker コマンドで直接実行
    docker compose run --rm ledger npm run check
    docker compose run --rm ledger node scripts/monthly-summary.mjs
    ```

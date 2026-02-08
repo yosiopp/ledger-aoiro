@@ -62,7 +62,7 @@
 年末時点の資産・負債・純資産の残高を確認します。
 
 ```bash
-docker compose run --rm ledger hledger -f ledger/accounts.ledger balancesheet
+./lgr exec -f ledger/accounts.ledger balancesheet
 ```
 
 ## 青色申告決算書の作成
@@ -112,7 +112,7 @@ docker compose run --rm ledger hledger -f ledger/accounts.ledger balancesheet
 **資産の部：**
 
 ```bash
-docker compose run --rm ledger hledger -f ledger/accounts.ledger balance A:
+./lgr exec balance A:
 ```
 
 - 現金 → `A:現金`
@@ -123,7 +123,7 @@ docker compose run --rm ledger hledger -f ledger/accounts.ledger balance A:
 **負債・資本の部：**
 
 ```bash
-docker compose run --rm ledger hledger -f ledger/accounts.ledger balance L: E:
+./lgr exec balance L: E:
 ```
 
 - 買掛金 → `L:買掛金`

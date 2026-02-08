@@ -38,6 +38,7 @@ npm run test:coverage
 ```
 
 テストファイルの場所：
+
 - `scripts/lib/__tests__/ledger-utils.test.mjs` - ユーティリティ関数のテスト
 
 ### テストの書き方
@@ -45,16 +46,16 @@ npm run test:coverage
 新しいユーティリティ関数を追加した場合は、対応するテストも追加してください：
 
 ```javascript
-import { describe, it, expect } from 'vitest';
-import { yourFunction } from '../ledger-utils.mjs';
+import { describe, it, expect } from "vitest";
+import { yourFunction } from "../ledger-utils.mjs";
 
-describe('yourFunction', () => {
-  it('正常系のテスト', () => {
-    const result = yourFunction('input');
-    expect(result).toBe('expected');
+describe("yourFunction", () => {
+  it("正常系のテスト", () => {
+    const result = yourFunction("input");
+    expect(result).toBe("expected");
   });
 
-  it('異常系のテスト', () => {
+  it("異常系のテスト", () => {
     expect(() => yourFunction(null)).toThrow();
   });
 });
@@ -88,11 +89,13 @@ describe('yourFunction', () => {
 ### テンプレートとしてのリリース
 
 1. すべてのテストが通ることを確認
+
    ```bash
    npm test
    ```
 
 2. 動作確認（Docker 環境で実行）
+
    ```bash
    docker compose run --rm ledger npm run check
    docker compose run --rm ledger node scripts/monthly-summary.mjs
@@ -101,11 +104,13 @@ describe('yourFunction', () => {
 3. ドキュメントの更新
 
 4. バージョンアップ
+
    ```bash
    npm version patch  # または minor, major
    ```
 
 5. GitHub にプッシュ
+
    ```bash
    git push origin main --tags
    ```
@@ -127,6 +132,7 @@ describe('yourFunction', () => {
 帳簿管理のみを行う場合、以下のファイルは削除しても問題ありません：
 
 **削除可能なファイル・ディレクトリ：**
+
 - `scripts/lib/__tests__/` - テストファイル
 - `vitest.config.mjs` - テスト設定
 - `package.json` の `devDependencies` セクション

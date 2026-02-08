@@ -32,7 +32,7 @@ Docker コマンドを毎回入力するのは手間なので、統一コマン�
 
 ```bash
 # ledger/accounts.ledger に追加
-account Expenses:NewCategory
+account X:NewCategory
 ```
 
 スクリプトで未定義の勘定科目が使われていたらエラーになります。
@@ -41,7 +41,7 @@ account Expenses:NewCategory
 
 ```ledger
 ; ledger/accounts.ledger に追加
-account Expenses:Books
+account X:Books
     note 業務関連の書籍購入費
 ```
 
@@ -58,6 +58,7 @@ account Expenses:Books
 ```
 
 このコマンドで以下が自動的に作成されます：
+
 - `ledger/YYYY/` ディレクトリ
 - `01.ledger` から `12.ledger` までの12個のファイル（テンプレート適用済み）
 - 既存のファイルは上書きされません（安全）
@@ -70,16 +71,16 @@ account Expenses:Books
 
 ```ledger
 2026/01/15 * 事務用品購入
-    Expenses:消耗品費           3000 JPY
-    Assets:銀行:事業用
+    X:消耗品費           3000 JPY
+    A:銀行:事業用
 
 2026/01/20 * クライアントA 売上
-    Assets:銀行:事業用       100000 JPY
-    Income:売上
+    A:銀行:事業用       100000 JPY
+    R:売上
 
 2026/01/25 * 自宅兼事務所の電気代（按分50%）
-    Expenses:水道光熱費          5000 JPY
-    Assets:銀行:事業用
+    X:水道光熱費          5000 JPY
+    A:銀行:事業用
 ```
 
 詳しい記帳方法は [workflow.md](workflow.md) を参照してください。
@@ -101,10 +102,10 @@ account Expenses:Books
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger balance Assets:現金
+docker compose run --rm ledger hledger balance A:現金
 
 # Windows (PowerShell)
-docker compose run --rm ledger hledger balance Assets:現金
+docker compose run --rm ledger hledger balance A:現金
 ```
 
 ### 6. 出納帳の表示
@@ -113,10 +114,10 @@ docker compose run --rm ledger hledger balance Assets:現金
 
 ```bash
 # Mac / Linux / WSL / Git Bash
-docker compose run --rm ledger hledger register Assets:銀行:事業用
+docker compose run --rm ledger hledger register A:銀行:事業用
 
 # Windows (PowerShell)
-docker compose run --rm ledger hledger register Assets:銀行:事業用
+docker compose run --rm ledger hledger register A:銀行:事業用
 ```
 
 ## 直接 Docker コマンドを実行する場合
@@ -153,7 +154,7 @@ docker compose run --rm ledger ledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
-  register Assets:銀行:事業用
+  register A:銀行:事業用
 
 # 複数ファイルを読み込んで残高表示
 docker compose run --rm ledger ledger \
@@ -215,11 +216,13 @@ git push
 ### コマンドが見つからない
 
 **ショートカットスクリプトが使えない場合：**
+
 - Mac/Linux/WSL/Git Bash: `./lgr` スクリプトを使用
 - Windows: `lgr.bat` を使用
 - または直接 Docker コマンドを実行してください
 
 **Docker が起動していない場合：**
+
 ```bash
 # Docker のステータス確認
 docker info
@@ -232,6 +235,7 @@ sudo systemctl start docker
 ### 権限エラー
 
 **PowerShell でスクリプトが実行できない場合：**
+
 ```powershell
 # 実行ポリシーを確認
 Get-ExecutionPolicy

@@ -31,6 +31,7 @@
 > **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 このコマンドで以下が自動的に作成されます：
+
 - `ledger/YYYY/` ディレクトリ
 - `01.ledger` から `12.ledger` までの12個のファイル（テンプレート適用済み）
 - 既存のファイルは上書きされません（安全）
@@ -43,38 +44,38 @@
 
 ```ledger
 2026/01/05 * 事務用品購入
-    Expenses:消耗品費           3000 JPY
-    Assets:現金
+    X:消耗品費           3000 JPY
+    A:現金
 ```
 
 **例2：売上が銀行口座に入金された場合**
 
 ```ledger
 2026/01/10 * クライアントA 請求書#001
-    Assets:銀行:事業用       100000 JPY
-    Income:売上
+    A:銀行:事業用       100000 JPY
+    R:売上
 ```
 
 **例3：クレジットカードで経費を支払った場合**
 
 ```ledger
 2026/01/15 * サーバー代（AWS）
-    Expenses:通信費      5000 JPY
-    Liabilities:クレジットカード
+    X:通信費      5000 JPY
+    L:クレジットカード
 
 ; 後日、クレジットカードの引き落とし
 2026/02/01 * クレジットカード引き落とし
-    Liabilities:クレジットカード      5000 JPY
-    Assets:銀行:事業用
+    L:クレジットカード      5000 JPY
+    A:銀行:事業用
 ```
 
 **例4：按分が必要な経費（家賃など）**
 
 ```ledger
 2026/01/25 * 家賃（事業利用30%）
-    Expenses:地代家賃              30000 JPY  ; 按分後
-    Equity:事業主:引出      70000 JPY  ; 個人利用分
-    Assets:銀行:事業用
+    X:地代家賃              30000 JPY  ; 按分後
+    E:事業主:引出      70000 JPY  ; 個人利用分
+    A:銀行:事業用
 ```
 
 ### 記帳のポイント
@@ -110,7 +111,7 @@ docker compose run --rm ledger ledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
-  balance Assets:現金
+  balance A:現金
 ```
 
 実際の現金残高や銀行残高と照合してください。
@@ -180,12 +181,12 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ; 決算整理仕訳（closing.ledger に記載）
 
 2026/12/31 * 決算整理：損益の確定
-    Income:売上               -1200000 JPY  ; 売上の相殺
-    Expenses:消耗品費            150000 JPY  ; 経費の相殺
-    Expenses:通信費        60000 JPY
-    Expenses:地代家賃                360000 JPY
+    R:売上               -1200000 JPY  ; 売上の相殺
+    X:消耗品費            150000 JPY  ; 経費の相殺
+    X:通信費        60000 JPY
+    X:地代家賃                360000 JPY
     ; ... 他の経費も同様に
-    Equity:繰越利益              JPY  ; 差額が利益
+    E:繰越利益              JPY  ; 差額が利益
 ```
 
 2. **翌年度の期首残高**
@@ -196,12 +197,12 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ; 期首残高（opening_balance.ledger に記載）
 
 2027/01/01 * 期首残高
-    Assets:現金                     47000 JPY
-    Assets:銀行:事業用           680000 JPY
-    Assets:備品               100000 JPY
-    Liabilities:クレジットカード          50000 JPY
-    Equity:期首残高
-    Equity:繰越利益        630000 JPY  ; 前年の利益
+    A:現金                     47000 JPY
+    A:銀行:事業用           680000 JPY
+    A:備品               100000 JPY
+    L:クレジットカード          50000 JPY
+    E:期首残高
+    E:繰越利益        630000 JPY  ; 前年の利益
 ```
 
 詳しくは [tax-filing.md](tax-filing.md) を参照してください。
@@ -213,13 +214,13 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 請求書を発行した時点
 2026/01/20 * クライアントB 請求書#002
-    Assets:売掛金   80000 JPY
-    Income:売上
+    A:売掛金   80000 JPY
+    R:売上
 
 ; 入金された時点
 2026/02/05 * クライアントB 入金
-    Assets:銀行:事業用        80000 JPY
-    Assets:売掛金
+    A:銀行:事業用        80000 JPY
+    A:売掛金
 ```
 
 ### 前払費用の処理
@@ -227,13 +228,13 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 年払いのサーバー代を支払った
 2026/01/01 * サーバー年間契約
-    Assets:前払費用      60000 JPY
-    Assets:銀行:事業用
+    A:前払費用      60000 JPY
+    A:銀行:事業用
 
 ; 毎月、費用として計上
 2026/01/31 * サーバー代（1月分）
-    Expenses:通信費       5000 JPY
-    Assets:前払費用
+    X:通信費       5000 JPY
+    A:前払費用
 ```
 
 ### 固定資産の減価償却
@@ -241,13 +242,13 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 備品を購入（10万円以上）
 2026/04/01 * ノートPC購入
-    Assets:備品           150000 JPY
-    Assets:銀行:事業用
+    A:備品           150000 JPY
+    A:銀行:事業用
 
 ; 年末に減価償却（定額法、耐用年数4年の場合）
 2026/12/31 * 減価償却（PC 9ヶ月分）
-    Expenses:減価償却費       28125 JPY  ; 150000 / 4年 * 9/12
-    Assets:備品
+    X:減価償却費       28125 JPY  ; 150000 / 4年 * 9/12
+    A:備品
 ```
 
 ## トラブルシューティング
@@ -276,5 +277,6 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 4. **月次・年次で確認**：集計スクリプトで数字を確認
 
 次のステップ：
+
 - [tax-filing.md](tax-filing.md) - 確定申告の準備
 - [accounts.md](accounts.md) - 勘定科目の詳細

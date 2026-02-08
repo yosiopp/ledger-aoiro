@@ -29,8 +29,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```ledger
 ; ledger/2026/01.ledger（会計の事実）
 2026/01/15 * 自宅兼事務所の電気代
-    Expenses:水道光熱費              5000 JPY  ; 事業按分50%
-    Assets:銀行:事業用
+    X:水道光熱費              5000 JPY  ; 事業按分50%
+    A:銀行:事業用
 ```
 
 ```
@@ -55,13 +55,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 勘定科目の階層構造
 
-青色申告決算書に対応した標準的な会計構造：
+青色申告決算書に対応した標準的な会計構造。勘定科目の大分類には **hledgerのタイプコードと一致する大文字1文字** を使用：
 
-- **Assets**（資産） - 現金、銀行預金、売掛金、前払費用、備品
-- **Liabilities**（負債） - 買掛金、クレジットカード、借入金
-- **Equity**（純資産） - 事業主借入・事業主貸、期首残高、繰越利益
-- **Income**（収益） - 売上、雑収入
-- **Expenses**（費用） - 事業経費（広告宣伝費、消耗品費、通信費、水道光熱費、地代家賃、旅費交通費、会議費、外注費、租税公課、減価償却費）
+- **A**（Asset / 資産） - 現金、銀行預金、売掛金、前払費用、備品
+  - 例：`A:現金`、`A:銀行:事業用`
+- **L**（Liability / 負債） - 買掛金、クレジットカード、借入金
+  - 例：`L:買掛金`、`L:クレジットカード`
+- **E**（Equity / 純資産） - 事業主借入・事業主貸、期首残高、繰越利益
+  - 例：`E:事業主:資本金`、`E:繰越利益`
+- **R**（Revenue / 収益） - 売上、雑収入
+  - 例：`R:売上`、`R:雑収入`
+- **X**（Expense / 費用） - 事業経費（広告宣伝費、消耗品費、通信費、水道光熱費、地代家賃、旅費交通費、会議費、外注費、租税公課、減価償却費）
+  - 例：`X:消耗品費`、`X:通信費`
+
+この命名規則により、入力が簡潔で、hledgerの `balancesheet`、`incomestatement` などの便利機能が正しく動作します。
 
 青色申告決算書とhledger勘定科目の対応表は [docs/accounts.md](docs/accounts.md) を参照してください。
 
@@ -126,12 +133,12 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 
 1. 利益を繰越利益に振替：
    ```
-   利益 → Equity:繰越利益
+   利益 → E:繰越利益
    ```
 
 2. 残高を期首残高に振替：
    ```
-   残高 → Equity:期首残高
+   残高 → E:期首残高
    ```
 
 旧年度の仕訳は `ledger/YYYY/closing.ledger` に、新年度の仕訳は `ledger/YYYY/opening.ledger` に記載します（例：2026年度なら `ledger/2026/closing.ledger` と `ledger/2027/opening.ledger`）。
@@ -152,7 +159,7 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 hledger -f ledger/accounts.ledger balance
 
 # 特定勘定科目の出納帳
-hledger -f ledger/accounts.ledger register Assets:銀行
+hledger -f ledger/accounts.ledger register A:銀行
 
 # 複数ファイルの読み込み
 hledger -f ledger/accounts.ledger -f ledger/2026-01.ledger balance

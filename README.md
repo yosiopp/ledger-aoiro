@@ -111,9 +111,11 @@ docker compose run --rm ledger hledger --version
 ```ledger
 # ledger/2026/01.ledger
 2026/01/15 * 事務用品購入
-    Expenses:消耗品費           3000 JPY
-    Assets:銀行:事業用
+    X:消耗品費           3000 JPY
+    A:銀行:事業用
 ```
+
+> **Note**: このプロジェクトでは、勘定科目の大分類にhledgerのタイプコードと一致する**大文字1文字**（A, L, E, R, X）を使用しています。詳しくは [勘定科目ガイド](docs/accounts.md) を参照してください。
 
 ### 6. 集計を実行
 

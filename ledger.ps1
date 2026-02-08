@@ -27,8 +27,12 @@ function Show-Help {
     Write-Host "                                月未指定: 現在の年の全月を表示、現在の月に追加"
     Write-Host "  .\ledger.ps1 web --view     - 閲覧専用モード（追加不可）"
     Write-Host ""
+    Write-Host "高度な使い方:"
+    Write-Host "  .\ledger.ps1 exec [args]    - hledger コマンドを直接実行"
+    Write-Host "                                例: .\ledger.ps1 exec balance A:現金"
+    Write-Host "                                例: .\ledger.ps1 exec -f ledger/accounts.ledger balance"
+    Write-Host ""
     Write-Host "開発用コマンド:"
-    Write-Host "  .\ledger.ps1 ledger [args]  - hledger を直接実行"
     Write-Host "  .\ledger.ps1 shell          - Dockerコンテナ内のシェルに入る"
     Write-Host "  .\ledger.ps1 build          - Dockerイメージをビルド"
     Write-Host ""
@@ -39,7 +43,7 @@ function Show-Help {
     Write-Host "  .\ledger.ps1 web 2026-01"
     Write-Host "  .\ledger.ps1 web"
     Write-Host "  .\ledger.ps1 web --view"
-    Write-Host "  .\ledger.ps1 ledger -f ledger/accounts.ledger balance"
+    Write-Host "  .\ledger.ps1 exec -f ledger/accounts.ledger balance"
 }
 
 function Invoke-DockerCompose {
@@ -154,11 +158,27 @@ switch ($Command.ToLower()) {
             docker compose run --rm --service-ports ledger hledger-web $files --serve --host=0.0.0.0 --port=5000
         }
     }
-    "ledger" {
+    "exec" {
         $ledgerArgs = $Args -join " "
         if ($ledgerArgs -eq "") {
-            Invoke-DockerCompose "hledger --version"
+            Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
+            Write-Host "使用例: .\ledger.ps1 exec balance A:現金"
+            Write-Host "使用例: .\ledger.ps1 exec -f ledger/accounts.ledger balance"
+            exit 1
         } else {
+            Invoke-DockerCompose "hledger $ledgerArgs"
+        }
+    }
+    "ledger" {
+        # 互換性のために残す（exec へのエイリアス）
+        $ledgerArgs = $Args -join " "
+        if ($ledgerArgs -eq "") {
+            Write-Host "エラー: hledger コマンドの引数を指定してください" -ForegroundColor Red
+            Write-Host "使用例: .\ledger.ps1 exec balance A:現金"
+            Write-Host "ヒント: 'ledger' コマンドは非推奨です。代わりに 'exec' を使用してください。"
+            exit 1
+        } else {
+            Write-Host "ヒント: 'ledger' コマンドは非推奨です。代わりに 'exec' を使用してください。" -ForegroundColor Yellow
             Invoke-DockerCompose "hledger $ledgerArgs"
         }
     }

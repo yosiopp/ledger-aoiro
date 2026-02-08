@@ -24,6 +24,11 @@ ledger-aoiro コマンド一覧
                            月未指定: 現在の年の全月を表示、現在の月に追加
   ./lgr web --view         閲覧専用モード（追加不可）
 
+高度な使い方:
+  ./lgr exec <args>        hledger コマンドを直接実行
+                           例: ./lgr exec balance A:現金
+                           例: ./lgr exec -f ledger/accounts.ledger balance
+
 開発用コマンド:
   ./lgr shell              Dockerコンテナ内のシェルに入る
   ./lgr build              Dockerイメージをビルド
@@ -96,6 +101,17 @@ case "${1:-}" in
     run_ledger hledger add \
       -f ledger/accounts.ledger \
       -f "ledger/$year/$month.ledger"
+    ;;
+
+  exec)
+    shift  # 'exec' コマンドを引数から除外
+    if [ $# -eq 0 ]; then
+      echo "エラー: hledger コマンドの引数を指定してください" >&2
+      echo "使用例: ./lgr exec balance A:現金" >&2
+      echo "使用例: ./lgr exec -f ledger/accounts.ledger balance" >&2
+      exit 1
+    fi
+    run_ledger hledger "$@"
     ;;
 
   web)

@@ -114,11 +114,13 @@ Node.js スクリプト（ES modules）がhledgerコマンドをラップして�
 ./lgr monthly 2026-01 # 月次集計
 ./lgr yearly          # 年次集計
 ./lgr export          # CSV エクスポート
+./lgr exec balance A: # hledger コマンドを直接実行（高度な使い方）
 ./lgr shell           # コンテナ内のシェルに入る
 ./lgr help            # ヘルプを表示
 ```
 
-**Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
+> [!NOTE]
+> Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 ### 直接 Docker コマンドを実行
 

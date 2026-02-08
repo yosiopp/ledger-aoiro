@@ -108,6 +108,27 @@ account X:Books
 ブラウザで http://localhost:5000 が開き、残高や取引履歴を視覚的に確認できます。
 
 
+### 6. hledger コマンドの直接実行
+
+高度な分析やカスタムレポートが必要な場合は、`lgr exec` で hledger コマンドを直接実行できます：
+
+```bash
+# 特定勘定科目の残高を確認
+./lgr exec balance A:現金
+
+# 特定勘定科目の出納帳（取引履歴）
+./lgr exec register A:銀行:事業用
+
+# 複数ファイルを指定して残高レポート
+./lgr exec -f ledger/accounts.ledger -f ledger/opening_balance.ledger -f ledger/2026/01.ledger balance
+
+# 貸借対照表を表示
+./lgr exec -f ledger/accounts.ledger balancesheet
+```
+
+> [!TIP]
+> 基本的な残高確認や取引履歴の閲覧には `./lgr web` を使用する方が便利です。ブラウザで視覚的に確認できます。
+
 ## 直接 Docker コマンドを実行する場合（高度な使い方）
 
 基本的な操作には `lgr` コマンドの使用を推奨しますが、直接 Docker Compose コマンドを実行することもできます。

@@ -310,6 +310,7 @@ Claude: 以下の仕訳を ledger/2026/01.ledger に追加します：
 
 ## 関連ドキュメント
 
+- [guide.md](guide.md) - 複式簿記の基礎
 - [workflow.md](workflow.md) - 日常的な記帳フロー
 - [setup.md](setup.md) - 初期セットアップ
 - [accounts.md](accounts.md) - 勘定科目の詳細

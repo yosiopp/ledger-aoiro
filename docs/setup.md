@@ -223,6 +223,7 @@ docker compose build --no-cache
 
 ## 次のステップ
 
+- [guide.md](guide.md) - 複式簿記の基礎（初心者向け）
 - [workflow.md](workflow.md) - 日常的な記帳フロー
 - [accounts.md](accounts.md) - 勘定科目と青色申告決算書の対応
 - [tax-filing.md](tax-filing.md) - 確定申告時の作業

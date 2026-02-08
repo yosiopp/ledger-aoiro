@@ -209,6 +209,7 @@ hledger をラップして各種処理を実行するスクリプト群です。
 各種ドキュメントを格納しています。
 
 - **[setup.md](setup.md)** - 初期セットアップの手順
+- **[guide.md](guide.md)** - 複式簿記の基礎と借方・貸方の説明
 - **[usage.md](usage.md)** - コマンドの使い方
 - **[workflow.md](workflow.md)** - 日常的な記帳フロー
 - **[accounts.md](accounts.md)** - 勘定科目と青色申告決算書の対応表
@@ -312,9 +313,3 @@ Claude Code（AI 開発支援ツール）用のプロジェクトガイド。プ
 - その他 = 環境設定やツール
 
 基本的には **ledger/ ディレクトリ内のファイルだけを編集**すれば日常の記帳ができます。
-
-## 関連ドキュメント
-
-- [setup.md](setup.md) - 初期セットアップ
-- [workflow.md](workflow.md) - 日常的な記帳フロー
-- [usage.md](usage.md) - コマンドの使い方

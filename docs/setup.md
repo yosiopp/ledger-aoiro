@@ -84,7 +84,7 @@ vi ledger/accounts.ledger
 
 ```ledger
 ; 書籍費を追加
-account Expenses:Books
+account X:Books
 ```
 
 ### 4.2 期首残高の設定
@@ -95,9 +95,9 @@ account Expenses:Books
 ; 期首残高
 
 2026/01/01 * 期首残高
-    Assets:Cash                     50000 JPY
-    Assets:Bank:Business           500000 JPY
-    Equity:OpeningBalances
+    A:現金                     50000 JPY
+    A:銀行:事業用           500000 JPY
+    E:期首残高
 ```
 
 ### 4.3 package.jsonのカスタマイズ（任意）
@@ -129,12 +129,12 @@ cat > ledger/2026/01.ledger << 'EOF'
 ; 2026年1月の取引
 
 2026/01/05 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Cash
+    X:消耗品費           3000 JPY
+    A:現金
 
 2026/01/10 * 売上入金
-    Assets:Bank:Business       50000 JPY
-    Income:Sales
+    A:銀行:事業用       50000 JPY
+    R:売上
 EOF
 
 # 残高確認
@@ -224,5 +224,5 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 
 問題が発生した場合：
 
-1. [ledger CLI 公式ドキュメント](https://ledger-cli.org/doc/ledger3.html)
+1. [hledger 公式ドキュメント](https://hledger.org/)
 2. テンプレートの [Issues](https://github.com/yosiopp/ledger-aoiro/issues)

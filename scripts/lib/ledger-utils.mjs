@@ -1,4 +1,4 @@
-// ledger CLI 操作の共通ユーティリティ
+// hledger 操作の共通ユーティリティ
 
 import { execSync } from 'child_process';
 import { readdirSync, readFileSync, existsSync } from 'fs';
@@ -243,7 +243,11 @@ export function extractDefinedAccounts() {
   for (const line of lines) {
     const trimmed = line.trim();
     if (trimmed.startsWith('account ') && !trimmed.startsWith(';')) {
-      const account = trimmed.replace(/^account\s+/, '').trim();
+      // "account " の後の勘定科目名を抽出（コメント ; 以降を除く）
+      const account = trimmed
+        .replace(/^account\s+/, '')
+        .split(';')[0]  // ; 以降のコメントを除去
+        .trim();
       accounts.add(account);
     }
   }

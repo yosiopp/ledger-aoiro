@@ -13,7 +13,7 @@ function parseArgs() {
   const options = {
     year: null,
     month: null,
-    output: 'transactions.csv',
+    output: 'output/transactions.csv',
     format: 'csv' // csv または register
   };
 

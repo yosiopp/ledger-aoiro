@@ -6,45 +6,47 @@
 
 ```
 ledger-aoiro/
-├── ledger/              # 帳簿ファイル（会計データ）
-│   ├── accounts.ledger          # 勘定科目定義
-│   └── 2026/                    # 年別ディレクトリ
-│       ├── opening.ledger           # 2026年度 期首残高
-│       ├── closing.ledger           # 2026年度 期末整理仕訳
-│       ├── 01.ledger                # 1月の取引
-│       ├── 02.ledger                # 2月の取引
-│       └── ...                      # 3月以降の取引
-├── memo/                # 判断の理由や根拠（任意）
-│   └── 2026-01/
-│       └── receipt-001.md
-├── scripts/             # Node.js スクリプト
+├── ledger/                         # 帳簿ファイル（会計データ）
+│   ├── accounts.ledger            # 勘定科目定義
+│   └── 2026/                      # 年別ディレクトリ
+│       ├── opening.ledger         # 2026年度 期首残高
+│       ├── closing.ledger         # 2026年度 期末整理仕訳
+│       ├── 01.ledger              # 1月の取引
+│       ├── 02.ledger              # 2月の取引
+│       └── ...                    # 3月以降の取引
+├── memo/                           # 判断の理由や根拠（任意）
+│   └── 2026/                      # 年別ディレクトリ
+│       └── 01/                    # 月別ディレクトリ
+│           └── receipt-001.md
+├── scripts/                        # Node.js スクリプト
 │   ├── lib/
-│   │   ├── ledger-utils.mjs         # 共通ユーティリティ
-│   │   └── __tests__/               # テストコード
-│   ├── check-balance.mjs            # 貸借一致チェック
-│   ├── validate-accounts.mjs        # 勘定科目検証
-│   ├── monthly-summary.mjs          # 月次集計
-│   ├── yearly-summary.mjs           # 年次集計
-│   └── export-csv.mjs               # CSV 出力
-├── templates/           # テンプレートファイル
-│   ├── monthly.ledger.template      # 月次ファイルのテンプレート
-│   └── memo.md.template             # メモファイルのテンプレート
-├── docs/                # ドキュメント
-│   ├── setup.md                     # セットアップガイド
-│   ├── usage.md                     # コマンド使用方法
-│   ├── workflow.md                  # 記帳ワークフロー
-│   ├── accounts.md                  # 勘定科目の詳細
-│   ├── structure.md                 # このファイル
-│   ├── development.md               # 開発ガイド
-│   └── tax-filing.md                # 確定申告ガイド
-├── docker-compose.yml   # Docker 設定
-├── Dockerfile           # Docker イメージ定義
-├── Makefile             # Mac/Linux 用ショートカット
-├── ledger.ps1           # Windows 用ショートカット
-├── package.json         # Node.js プロジェクト設定
-├── vitest.config.mjs    # テスト設定
-├── CLAUDE.md            # Claude Code 用開発ガイド
-└── README.md            # プロジェクト概要
+│   │   ├── ledger-utils.mjs      # 共通ユーティリティ
+│   │   └── __tests__/            # テストコード
+│   ├── check-balance.mjs          # 貸借一致チェック
+│   ├── validate-accounts.mjs      # 勘定科目検証
+│   ├── monthly-summary.mjs        # 月次集計
+│   ├── yearly-summary.mjs         # 年次集計
+│   └── export-csv.mjs             # CSV 出力
+├── templates/                      # テンプレートファイル
+│   ├── monthly.ledger.template    # 月次ファイルのテンプレート
+│   └── memo.md.template           # メモファイルのテンプレート
+├── docs/                           # ドキュメント
+│   ├── setup.md                   # セットアップガイド
+│   ├── usage.md                   # コマンド使用方法
+│   ├── workflow.md                # 記帳ワークフロー
+│   ├── accounts.md                # 勘定科目の詳細
+│   ├── structure.md               # このファイル
+│   ├── development.md             # 開発ガイド
+│   └── tax-filing.md              # 確定申告ガイド
+├── docker-compose.yml              # Docker 設定
+├── Dockerfile                      # Docker イメージ定義
+├── lgr                             # Mac/Linux 用コマンド（POSIX Shell）
+├── lgr.bat                         # Windows 用コマンド
+├── ledger.ps1                      # PowerShell実装（lgr.batから呼ばれる）
+├── package.json                    # Node.js プロジェクト設定
+├── vitest.config.mjs               # テスト設定
+├── CLAUDE.md                       # Claude Code 用開発ガイド
+└── README.md                       # プロジェクト概要
 ```
 
 ## 各ディレクトリの詳細
@@ -59,14 +61,14 @@ ledger-aoiro/
 
 ```ledger
 ; 資産
-account Assets:Cash
+account A:現金
     note 手元現金
 
-account Assets:Bank:Business
+account A:銀行:事業用
     note 事業用銀行口座
 
 ; 費用
-account Expenses:Supplies
+account X:消耗品費
     note 消耗品費
 ```
 
@@ -79,9 +81,9 @@ account Expenses:Supplies
 ```ledger
 ; ledger/2026/opening.ledger
 2026/01/01 * 期首残高
-    Assets:Cash                     50000 JPY
-    Assets:Bank:Business           500000 JPY
-    Equity:OpeningBalances
+    A:現金                     50000 JPY
+    A:銀行:事業用           500000 JPY
+    E:期首残高
 ```
 
 年度が変わったら、前年度の closing.ledger で確定した残高をここに記載します。
@@ -93,10 +95,10 @@ account Expenses:Supplies
 ```ledger
 ; ledger/2026/closing.ledger
 2026/12/31 * 決算整理：損益の確定
-    Income:Sales               -1200000 JPY  ; 売上の相殺
-    Expenses:Supplies            150000 JPY  ; 経費の相殺
+    R:売上               -1200000 JPY  ; 売上の相殺
+    X:消耗品費            150000 JPY  ; 経費の相殺
     ; ...
-    Equity:RetainedEarnings              JPY  ; 差額が利益
+    E:繰越利益              JPY  ; 差額が利益
 ```
 
 #### YYYY/ - 年別ディレクトリ
@@ -104,6 +106,7 @@ account Expenses:Supplies
 各年ごとにディレクトリを作成し、その下に月次ファイルを配置します。
 
 **ファイル命名規則：**
+
 - `01.ledger` - 1月の取引
 - `02.ledger` - 2月の取引
 - ...
@@ -115,12 +118,12 @@ account Expenses:Supplies
 ; 2026年1月の取引
 
 2026/01/05 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Cash
+    X:消耗品費           3000 JPY
+    A:現金
 
 2026/01/10 * クライアントA 売上
-    Assets:Bank:Business       100000 JPY
-    Income:Sales
+    A:銀行:事業用       100000 JPY
+    R:売上
 ```
 
 ### memo/ - 判断の理由や根拠（任意）
@@ -130,7 +133,7 @@ account Expenses:Supplies
 - **ledger** = 会計の事実（What happened）
 - **memo** = 判断の理由（Why we recorded it this way）
 
-**例：memo/2026-01/receipt-001.md**
+**例：memo/2026/01/receipt-001.md**
 
 ```markdown
 # 自宅兼事務所の電気代
@@ -154,14 +157,15 @@ memoディレクトリは任意ですが、税務調査時に「なぜその判�
 
 ### scripts/ - Node.js スクリプト
 
-ledger CLI をラップして各種処理を実行するスクリプト群です。
+hledger をラップして各種処理を実行するスクリプト群です。
 
 #### scripts/lib/ledger-utils.mjs
 
 共通ユーティリティ関数を集めたモジュール：
+
 - ファイル検索・取得
 - 勘定科目のパース
-- ledger CLI コマンドの実行ラッパー
+- hledger コマンドの実行ラッパー
 - コマンドライン引数の解析
 
 #### 各スクリプトの役割
@@ -200,7 +204,7 @@ ledger CLI をラップして各種処理を実行するスクリプト群です
 
 ### docker-compose.yml
 
-Docker Compose の設定ファイル。ledger CLI を含む Docker コンテナを定義しています。
+Docker Compose の設定ファイル。hledger を含む Docker コンテナを定義しています。
 
 ```bash
 # コンテナを使ってコマンドを実行
@@ -209,25 +213,22 @@ docker compose run --rm ledger node scripts/check-balance.mjs
 
 ### Dockerfile
 
-ledger CLI をインストールした Docker イメージの定義ファイル。
+hledger をインストールした Docker イメージの定義ファイル。
 
-### Makefile
+### lgr / lgr.bat
 
-Mac / Linux / WSL / Git Bash 用のショートカットコマンド集。
+プロジェクトの統一コマンド。環境に応じて自動的に適切なスクリプトを実行します。
 
 ```bash
-make check    # 貸借チェック
-make monthly MONTH=2026-01  # 月次集計
+./lgr check           # 貸借チェック
+./lgr monthly 2026-01 # 月次集計
 ```
+
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 ### ledger.ps1
 
-Windows PowerShell 用のショートカットスクリプト。
-
-```powershell
-.\ledger.ps1 check         # 貸借チェック
-.\ledger.ps1 monthly 2026-01  # 月次集計
-```
+PowerShell実装スクリプト。`lgr.bat` から呼び出されます。直接実行も可能ですが、`lgr` コマンドの使用を推奨します。
 
 ### package.json
 
@@ -263,7 +264,7 @@ Claude Code（AI 開発支援ツール）用のプロジェクトガイド。プ
 ### 日常的に編集するファイル
 
 - `ledger/YYYY/MM.ledger` - 毎日〜毎週
-- `memo/YYYY-MM/*.md` - 必要に応じて
+- `memo/YYYY/MM/*.md` - 必要に応じて
 
 ### 定期的に編集するファイル
 

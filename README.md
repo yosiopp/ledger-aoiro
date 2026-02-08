@@ -80,25 +80,15 @@ docker compose run --rm ledger hledger --version
 
 ### 3. 年次ディレクトリの作成
 
-**Mac / Linux / WSL / Git Bash：**
-
 ```bash
 # 現在の年度のディレクトリを作成
-make init-year
+./lgr init-year
 
 # 特定の年度を指定
-make init-year YEAR=2027
+./lgr init-year 2027
 ```
 
-**Windows (PowerShell)：**
-
-```powershell
-# 現在の年度のディレクトリを作成
-.\ledger.ps1 init-year
-
-# 特定の年度を指定
-.\ledger.ps1 init-year 2027
-```
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 これで `ledger/YYYY/` ディレクトリと `01.ledger` から `12.ledger` までの12個の月次ファイルが自動作成されます。
 
@@ -107,11 +97,7 @@ make init-year YEAR=2027
 **対話的に入力（推奨）：**
 
 ```bash
-# Mac / Linux / WSL / Git Bash
-make add MONTH=2026-01
-
-# Windows (PowerShell)
-.\ledger.ps1 add 2026-01
+./lgr add 2026-01
 ```
 
 ガイド付きプロンプトで以下を入力：
@@ -125,26 +111,18 @@ make add MONTH=2026-01
 ```ledger
 # ledger/2026/01.ledger
 2026/01/15 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Bank:Business
+    X:消耗品費           3000 JPY
+    A:銀行:事業用
 ```
+
+> **Note**: このプロジェクトでは、勘定科目の大分類にhledgerのタイプコードと一致する**大文字1文字**（A, L, E, R, X）を使用しています。詳しくは [勘定科目ガイド](docs/accounts.md) を参照してください。
 
 ### 6. 集計を実行
 
-**Mac / Linux / WSL / Git Bash：**
-
 ```bash
-make check                  # 貸借チェック
-make monthly MONTH=2026-01  # 月次集計
-make web                    # ブラウザで閲覧
-```
-
-**Windows (PowerShell)：**
-
-```powershell
-.\ledger.ps1 check         # 貸借チェック
-.\ledger.ps1 monthly 2026-01  # 月次集計
-.\ledger.ps1 web           # ブラウザで閲覧
+./lgr check           # 貸借チェック
+./lgr monthly 2026-01 # 月次集計
+./lgr web             # ブラウザで閲覧
 ```
 
 ## ドキュメント

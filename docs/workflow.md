@@ -20,27 +20,18 @@
 
 年度が変わったら、まず年次ディレクトリと12ヶ月分のファイルを一括作成します。
 
-**Mac / Linux / WSL / Git Bash:**
-
 ```bash
 # 現在の年度のディレクトリを作成
-make init-year
+./lgr init-year
 
 # 特定の年度を指定
-make init-year YEAR=2027
+./lgr init-year 2027
 ```
 
-**Windows (PowerShell):**
-
-```powershell
-# 現在の年度のディレクトリを作成
-.\ledger.ps1 init-year
-
-# 特定の年度を指定
-.\ledger.ps1 init-year 2027
-```
+> **Note**: Windows PowerShell/Command Prompt では `./` を省略して `lgr` と実行してください。
 
 このコマンドで以下が自動的に作成されます：
+
 - `ledger/YYYY/` ディレクトリ
 - `01.ledger` から `12.ledger` までの12個のファイル（テンプレート適用済み）
 - 既存のファイルは上書きされません（安全）
@@ -53,46 +44,69 @@ make init-year YEAR=2027
 
 ```ledger
 2026/01/05 * 事務用品購入
-    Expenses:Supplies           3000 JPY
-    Assets:Cash
+    X:消耗品費           3000 JPY
+    A:現金
 ```
 
 **例2：売上が銀行口座に入金された場合**
 
 ```ledger
 2026/01/10 * クライアントA 請求書#001
-    Assets:Bank:Business       100000 JPY
-    Income:Sales
+    A:銀行:事業用       100000 JPY
+    R:売上
 ```
 
 **例3：クレジットカードで経費を支払った場合**
 
 ```ledger
 2026/01/15 * サーバー代（AWS）
-    Expenses:Communication      5000 JPY
-    Liabilities:CreditCard
+    X:通信費      5000 JPY
+    L:クレジットカード
 
 ; 後日、クレジットカードの引き落とし
 2026/02/01 * クレジットカード引き落とし
-    Liabilities:CreditCard      5000 JPY
-    Assets:Bank:Business
+    L:クレジットカード      5000 JPY
+    A:銀行:事業用
 ```
 
 **例4：按分が必要な経費（家賃など）**
 
 ```ledger
 2026/01/25 * 家賃（事業利用30%）
-    Expenses:Rent              30000 JPY  ; 按分後
-    Equity:Owner:Drawings      70000 JPY  ; 個人利用分
-    Assets:Bank:Business
+    X:地代家賃              30000 JPY  ; 按分後
+    E:事業主:引出      70000 JPY  ; 個人利用分
+    A:銀行:事業用
 ```
 
 ### 記帳のポイント
 
 - **日付順に記録**：取引日順に並べると後で見やすい
 - **説明を明確に**：取引相手や内容を具体的に書く
-- **レシート番号**：`; Receipt #123` のようにコメントで記録
+- **レシート番号**：`; receipt: 2026-01-15-invoice-001.pdf` のようにコメントで記録
 - **こまめに記帳**：週1回程度は最低でも記帳する習慣を
+
+### 領収書メモの運用
+
+プロジェクトの設計思想として、**帳簿（ledger）と判断根拠（memo）を分離**しています。
+
+- **ledgerファイル** = 客観的な会計事実（What happened）
+- **memoファイル** = 判断の理由と背景（Why we recorded it this way）
+
+領収書やレシートごとに `templates/receipt.memo.tpl` を使ってメモを作成します。
+
+**ファイル名の例：**
+```
+memo/2026/01/receipt-001.md  # 2026年1月の1件目
+memo/2026/01/receipt-002.md  # 2026年1月の2件目
+```
+
+**記録すべき内容：**
+- 基本情報（日付、支払先、金額、勘定科目）
+- **按分の根拠**：「自宅兼事務所、総面積100㎡のうち事務所専用スペース50㎡のため50%按分」
+- **業務上の必要性**：「クライアント向けWebサイト開発に使用するため」
+- **税務上の判断理由**：「国税庁タックスアンサーNo.1805参照」
+
+これにより、税務調査や将来の自分に対して、なぜその記帳をしたかを説明できます。
 
 ## 2. 検証とチェック
 
@@ -120,7 +134,7 @@ docker compose run --rm ledger ledger \
   -f ledger/accounts.ledger \
   -f ledger/opening_balance.ledger \
   -f ledger/2026/01.ledger \
-  balance Assets:Cash
+  balance A:現金
 ```
 
 実際の現金残高や銀行残高と照合してください。
@@ -190,29 +204,54 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ; 決算整理仕訳（closing.ledger に記載）
 
 2026/12/31 * 決算整理：損益の確定
-    Income:Sales               -1200000 JPY  ; 売上の相殺
-    Expenses:Supplies            150000 JPY  ; 経費の相殺
-    Expenses:Communication        60000 JPY
-    Expenses:Rent                360000 JPY
+    R:売上               -1200000 JPY  ; 売上の相殺
+    X:消耗品費            150000 JPY  ; 経費の相殺
+    X:通信費        60000 JPY
+    X:地代家賃                360000 JPY
     ; ... 他の経費も同様に
-    Equity:RetainedEarnings              JPY  ; 差額が利益
+    E:繰越利益              JPY  ; 差額が利益
 ```
 
 2. **翌年度の期首残高**
 
-翌年の opening_balance.ledger に、すべての資産・負債・純資産の残高を記録します。
+#### 継続年度の場合（前年度から事業継続）
+
+翌年の opening.ledger に、すべての資産・負債・純資産の残高を記録します。
 
 ```ledger
-; 期首残高（opening_balance.ledger に記載）
+; ledger/2027/opening.ledger
 
-2027/01/01 * 期首残高
-    Assets:Cash                     47000 JPY
-    Assets:Bank:Business           680000 JPY
-    Assets:Equipment               100000 JPY
-    Liabilities:CreditCard          50000 JPY
-    Equity:OpeningBalances
-    Equity:RetainedEarnings        630000 JPY  ; 前年の利益
+2027/01/01 * 期首残高（資産）
+    A:現金                     47000 JPY
+    A:銀行:事業用           680000 JPY
+    A:備品               100000 JPY
+    E:期首残高
+
+2027/01/01 * 期首残高（負債）
+    E:期首残高              -50000 JPY
+    L:クレジットカード
+
+2027/01/01 * 前年度繰越利益
+    E:期首残高             630000 JPY  ; 前年の利益
+    E:繰越利益
 ```
+
+**注意：** 前年度の closing.ledger と金額を一致させ、期首残高の合計は必ずゼロになるようにします。
+
+#### 開業初年度の場合
+
+開業時は初期資本金を設定します。
+
+```ledger
+; ledger/2026/opening.ledger（2026年開業の場合）
+
+2026/01/01 * 開業資本金
+    A:現金                 100000 JPY
+    A:銀行:事業用         500000 JPY
+    E:期首残高
+```
+
+事業用として確保した現金・銀行預金を資産として計上し、同額を期首残高（純資産）に記録します。
 
 詳しくは [tax-filing.md](tax-filing.md) を参照してください。
 
@@ -223,13 +262,13 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 請求書を発行した時点
 2026/01/20 * クライアントB 請求書#002
-    Assets:AccountsReceivable   80000 JPY
-    Income:Sales
+    A:売掛金   80000 JPY
+    R:売上
 
 ; 入金された時点
 2026/02/05 * クライアントB 入金
-    Assets:Bank:Business        80000 JPY
-    Assets:AccountsReceivable
+    A:銀行:事業用        80000 JPY
+    A:売掛金
 ```
 
 ### 前払費用の処理
@@ -237,13 +276,13 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 年払いのサーバー代を支払った
 2026/01/01 * サーバー年間契約
-    Assets:PrepaidExpenses      60000 JPY
-    Assets:Bank:Business
+    A:前払費用      60000 JPY
+    A:銀行:事業用
 
 ; 毎月、費用として計上
 2026/01/31 * サーバー代（1月分）
-    Expenses:Communication       5000 JPY
-    Assets:PrepaidExpenses
+    X:通信費       5000 JPY
+    A:前払費用
 ```
 
 ### 固定資産の減価償却
@@ -251,14 +290,35 @@ docker compose run --rm ledger node scripts/yearly-summary.mjs
 ```ledger
 ; 備品を購入（10万円以上）
 2026/04/01 * ノートPC購入
-    Assets:Equipment           150000 JPY
-    Assets:Bank:Business
+    A:備品           150000 JPY
+    A:銀行:事業用
 
 ; 年末に減価償却（定額法、耐用年数4年の場合）
 2026/12/31 * 減価償却（PC 9ヶ月分）
-    Expenses:Depreciation       28125 JPY  ; 150000 / 4年 * 9/12
-    Assets:Equipment
+    X:減価償却費       28125 JPY  ; 150000 / 4年 * 9/12
+    A:備品
 ```
+
+### 在庫の計上（商品販売業の場合）
+
+商品を仕入れて販売する業種では、期末に在庫を棚卸して資産として計上します。
+
+**仕入時：**
+```ledger
+2026/06/15 * 商品仕入
+    X:CostOfGoodsSold      200000 JPY
+    A:銀行:事業用
+```
+
+**期末棚卸（12/31）：**
+```ledger
+; 期末在庫を資産に振替
+2026/12/31 * 期末棚卸
+    A:Inventory            80000 JPY  ; 在庫残高
+    X:CostOfGoodsSold
+```
+
+**注意：** サービス業など在庫を持たない業種では、この処理は不要です。
 
 ## トラブルシューティング
 
@@ -286,5 +346,6 @@ docker compose run --rm ledger node scripts/validate-accounts.mjs
 4. **月次・年次で確認**：集計スクリプトで数字を確認
 
 次のステップ：
+
 - [tax-filing.md](tax-filing.md) - 確定申告の準備
 - [accounts.md](accounts.md) - 勘定科目の詳細

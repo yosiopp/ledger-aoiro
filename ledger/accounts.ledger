@@ -4,7 +4,7 @@
 ; 青色申告（個人事業主）向け 勘定科目定義
 ; - 複式簿記
 ; - 青色申告決算書（65万円控除）
-; - ledger CLI 前提
+; - hledger 前提
 ;
 ; 注意:
 ;   ・このファイルは「勘定科目の正規一覧」です
@@ -14,114 +14,114 @@
 
 
 ; ------------------------------------------------------------
-; 資産（Assets）
+; A 資産（Assets）
 ; ------------------------------------------------------------
 
-account Assets
+account A  ; type:A
 
 ; 手元現金
-account Assets:Cash
+account A:現金
 
 ; 銀行口座（事業用）
-account Assets:Bank
-account Assets:Bank:Business
+account A:銀行
+account A:銀行:事業用
 
 ; 売掛金（未回収の売上）
-account Assets:AccountsReceivable
+account A:売掛金
 
 ; 前払費用（年払い保険、サーバー代など）
-account Assets:PrepaidExpenses
+account A:前払費用
 
 ; 備品・固定資産（減価償却対象）
 ; ※ 10万円以上のものを想定
-account Assets:Equipment
+account A:備品
 
 
 ; ------------------------------------------------------------
-; 負債（Liabilities）
+; L 負債（Liabilities）
 ; ------------------------------------------------------------
 
-account Liabilities
+account L  ; type:L
 
 ; 買掛金（未払の経費）
-account Liabilities:AccountsPayable
+account L:買掛金
 
 ; クレジットカード未払
-account Liabilities:CreditCard
+account L:クレジットカード
 
 ; 借入金（金融機関・個人）
-account Liabilities:Loans
+account L:借入金
 
 
 ; ------------------------------------------------------------
-; 純資産（Equity）
+; E 純資産（Equity）
 ; ------------------------------------------------------------
 
-account Equity
+account E  ; type:E
 
 ; 期首残高
 ; 開業時・年度切替時に使用
-account Equity:OpeningBalances
+account E:期首残高
 
 ; 事業主資本
-account Equity:Owner
+account E:事業主
 
 ; 事業主が事業に入れたお金・資産
-account Equity:Owner:Contributions
+account E:事業主:資本金
 
 ; 事業のお金を個人で使った場合
-account Equity:Owner:Drawings
+account E:事業主:引出
 
 ; 前年度からの繰越利益
-account Equity:RetainedEarnings
+account E:繰越利益
 
 
 ; ------------------------------------------------------------
-; 収益（Income）
+; R 収益（Revenue）
 ; ------------------------------------------------------------
 
-account Income
+account R  ; type:R
 
 ; 主たる売上
-account Income:Sales
+account R:売上
 
 ; 雑収入（キャンセル料、利息など）
-account Income:Other
+account R:雑収入
 
 
 ; ------------------------------------------------------------
-; 費用（Expenses）
+; E 費用（Expense）
 ; ------------------------------------------------------------
 
-account Expenses
+account X  ; type:X
 
 ; 広告宣伝費
-account Expenses:Advertising
+account X:広告宣伝費
 
 ; 消耗品費（10万円未満の備品含む）
-account Expenses:Supplies
+account X:消耗品費
 
 ; 通信費（携帯・ネット・サーバー代）
-account Expenses:Communication
+account X:通信費
 
 ; 水道光熱費
-account Expenses:Utilities
+account X:水道光熱費
 
 ; 地代家賃（事務所・自宅按分）
-account Expenses:Rent
+account X:地代家賃
 
 ; 旅費交通費
-account Expenses:Travel
+account X:旅費交通費
 
 ; 会議費・交際費
-account Expenses:Meals
+account X:会議費交際費
 
 ; 外注費
-account Expenses:Outsourcing
+account X:外注費
 
 ; 租税公課（事業税・印紙税など）
 ; ※ 所得税・住民税は含めない
-account Expenses:Taxes
+account X:租税公課
 
 ; 減価償却費
-account Expenses:Depreciation
+account X:減価償却費
